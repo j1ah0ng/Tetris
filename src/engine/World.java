@@ -8,7 +8,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 
-public abstract class World extends javafx.scene.layout.Pane {
+public abstract class World extends javafx.scene.layout.GridPane {
 
     // Attributes
     private HashSet<KeyCode> keys;
