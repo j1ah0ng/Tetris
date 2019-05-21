@@ -23,7 +23,7 @@ public class TetrominoT extends Tetromino {
 		super();
 		al = new ArrayList<ImageView>();
 		super.setImage(new Image("https://t5.rbxcdn.com/0affe2ebea58132423540072cecdc010"));
-		al.add(e)
+		al.add(e);
 	}
 	
 	@Override
