@@ -191,4 +191,13 @@ public class TetrominoWorld extends World {
                 break;
         }
     }
+
+    public void setLeft(KeyCode k) {
+    }
+    public void setRight(KeyCode k) {
+    }
+    public void setDown(KeyCode k) {
+    }
+    public void setRotate(KeyCode k) {
+    }
 }
