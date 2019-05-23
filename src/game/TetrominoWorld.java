@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 
 public class TetrominoWorld extends World {
 
@@ -27,7 +28,7 @@ public class TetrominoWorld extends World {
     // Attributes
     private long delay;             // Delay between display updates
     private long lastRun;           // Last run of act()
-    private boolean spawnNew;
+    private boolean spawnNew;       // Whether it should spawn a new block this tick
     ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
 
     // Constructors
@@ -89,11 +90,45 @@ public class TetrominoWorld extends World {
         // Rotate fallingBlocks
         if (hasKey(ROTATE)) {
 
-            // Find origin
+            // Find origin as the average coordinates of all falling blocks
+            int xZero = 0;
+            int yZero = 0;
+            for (ImageView i : fallingBlocks) {
+                xZero += GridPane.getColumnIndex(i);
+                yZero += GridPane.getRowIndex(i);
+            }
+            xZero /= 4;
+            yZero /= 4;
 
             // Translate blocks to points about origin
+            int[][] points = new int[4][2];
+            int xOffset = 0;
+            for (int i = 0; i < 4; ++i ) {
+                ImageView v = fallingBlocks.get(i);
+                points[i][0] = getColumnIndex(v) - xZero;
+                points[i][1] = getRowIndex(v) - yZero;
 
-            // Do coordinate transform and move blocks back
+                // Do coordinate transform, adding back origin offsets
+                int[] temp = rotatePoint(points[i]);
+                points[i][0] = temp[0] + xZero;
+                points[i][1] = temp[1] + yZero;
+
+                // Check if the entire block needs shifting
+                while (points[i][0] + xOffset < 0) {
+                    ++xOffset;
+                }
+                while (points[i][0] + xOffset >= 12) {
+                    --xOffset;
+                }
+            }
+
+            // Move blocks back
+            for (int i = 0; i < 4; ++i) {
+                ImageView v = fallingBlocks.get(i);
+                setColumnIndex(v, points[i][0] + xOffset);
+                setRowIndex(v, points[i][1]);
+            }
+
             removeKey(ROTATE);
         }
     }
@@ -104,8 +139,8 @@ public class TetrominoWorld extends World {
      * @return A rotated point represented as int[] {x, y}
      */
     public int[] rotatePoint(int[] point) {
-        return {(R_MAT[0,0] * point[0]) + (R_MAT[0,1] * point[1]),
-                (R_MAT[1,0] * point[0]) + (R_MAT[1,1] * point[1])};
+        return new int[] {(R_MAT[0][0] * point[0]) + (R_MAT[0][1] * point[1]),
+                (R_MAT[1][0] * point[0]) + (R_MAT[1][1] * point[1])};
     }
 
     /** Builds a Tetromino from a list of ImageViews of Blocks
