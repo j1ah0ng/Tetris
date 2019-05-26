@@ -43,7 +43,7 @@ public class Game extends Application {
         HBox hb1 = new HBox();
         Image modes = new Image("file:assets/Backgrounds/modes.png");
         Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
-        //setfitwith and height
+        //setfitwidth and height
         iv2.setImage(modes);
         hb1.getChildren().add(iv2);
         
