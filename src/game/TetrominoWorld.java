@@ -9,11 +9,16 @@ import javafx.scene.layout.GridPane;
 
 public class TetrominoWorld extends World {
 
+    /* Begin static types */
+
     // Array of all possible Block types
     public static final Block[] BLOCKS = {Block.BLOCK_BASE};
 
-    // Rotate keycode
-    public static final KeyCode ROTATE = KeyCode.R;
+    // Keycode bindings
+    public static KeyCode ROTATE = KeyCode.R;
+    public static KeyCode DOWN = KeyCode.DOWN;
+    public static KeyCode LEFT = KeyCode.LEFT;
+    public static KeyCode RIGHT = KeyCode.RIGHT;
 
     // Rotation matrix
     public static final int[][] R_MAT =
@@ -25,66 +30,75 @@ public class TetrominoWorld extends World {
     // Grid height
     public static final int HEIGHT = 18;
 
+    /* End static types */
+
     // Attributes
     private long delay;             // Delay between display updates
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
+    private boolean hasTouchedBottom;
+    // Flag variable for having touched the bottom stack
+
     ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
 
     // Constructors
     public TetrominoWorld() {
         super();
+        lastRun = System.currentTimeMillis() * 1e3;
+        spawnNew = true;
+        hasTouchedBottom = false;
     }
 
     // Methods
     @Override
     public void act(long now) {
 
-        // Spawn new blocks
-        if (spawnNew) {
+        // Check whether we've reached a new tick
+        if (lastRun - now > delay) {
+            if (spawnNew) {
 
-            // Create four new Block objects and add them to the falling
-            // ArrayList
+                // Create four new Block objects and add them to the falling
+                // ArrayList
 
-            // Randomise block appearance
-            int blockType = (int)(Math.random() * BLOCKS.length);
-            fallingBlocks = new ArrayList<ImageView>();
-            for (int i = 0; i < 4; ++i) {
-                fallingBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                // Randomise block appearance
+                int blockType = (int)(Math.random() * BLOCKS.length);
+                fallingBlocks = new ArrayList<ImageView>();
+                for (int i = 0; i < 4; ++i) {
+                    fallingBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                }
+
+                // Arrange the blocks in the ArrayList accordingly
+                buildTetromino(fallingBlocks);
+
+                spawnNew = hasTouchedBottom = false;
             }
 
-            // Arrange the blocks in the ArrayList accordingly
-            buildTetromino(fallingBlocks);
+            // Block movements and check collisions
+            else {
 
-            spawnNew = false;
-        }
+                // Iterate over falling blocks
+                for (ImageView view : fallingBlocks) {
+                    // Move blocks down
+                    setRowIndex(view, getRowIndex(view) + 1);
+                    // Check if next move will intersect with bottom stack
+                    for (Node n : getChildren()) {
+                        if (!hasTouchedBottom &&
+                                !fallingBlocks.contains(n) &&
+                                getRowIndex(n) - 1 == getRowIndex(view) &&
+                                getColumnIndex(n) == getColumnIndex(view)) {
 
-        // Block movements and check collisions
-        else if (lastRun - now > delay) {
+                            // If so, set flag
+                            hasTouchedBottom = spawnNew = true;
 
-            // Flag variable for having touched the bottom stack
-            boolean hasTouchedBottom = false;
-
-            // Iterate over falling blocks
-            for (ImageView view : fallingBlocks) {
-                // Move blocks down
-                setRowIndex(view, getRowIndex(view) + 1);
-                // Check if next move will intersect with bottom stack
-                for (Node n : getChildren()) {
-                    if (!hasTouchedBottom &&
-                            !fallingBlocks.contains(n) &&
-                            getRowIndex(n) - 1 == getRowIndex(view) &&
-                            getColumnIndex(n) == getColumnIndex(view)) {
-
-                        // If so, set flag
-                        hasTouchedBottom = true;
-
+                        }
                     }
                 }
+
+                spawnNew = hasTouchedBottom;
             }
 
-            spawnNew = hasTouchedBottom;
-
+            // Update runtime
+            lastRun = now;
         }
 
         // Rotate fallingBlocks
@@ -117,7 +131,7 @@ public class TetrominoWorld extends World {
                 while (points[i][0] + xOffset < 0) {
                     ++xOffset;
                 }
-                while (points[i][0] + xOffset >= 12) {
+                while (points[i][0] + xOffset >= WIDTH) {
                     --xOffset;
                 }
             }
@@ -130,6 +144,31 @@ public class TetrominoWorld extends World {
             }
 
             removeKey(ROTATE);
+        }
+
+        // Move falling blocks
+        if (hasKey(this.DOWN)) {
+            // Check bounds
+            if (hasTouchedBottom) break;
+            for (ImageView i : fallingBlocks) {
+                setRowIndex(i, getRowIndex(i) + 1);
+            }
+        } else if (hasKey(this.LEFT)) {
+            // Check bounds
+            for (ImageView i : fallingBlocks) {
+                if (getColumnIndex(i) - 1 < 0) break;
+            }
+            for (ImageView i : fallingBlocks ){
+                setColumnIndex(i, getColumnIndex(i) - 1);
+            }
+        } else if (hasKey(this.RIGHT)) {
+            // Check bounds
+            for (ImageView i : fallingBlocks) {
+                if (getColumnIndex(i) + 1 >= WIDTH) break;
+            }
+            for (ImageView i : fallingBlocks) {
+                setColumnIndex(i, getColumnIndex(i) + 1);
+            }
         }
     }
 
@@ -193,11 +232,15 @@ public class TetrominoWorld extends World {
     }
 
     public void setLeft(KeyCode k) {
+        this.LEFT = k;
     }
     public void setRight(KeyCode k) {
+        this.RIGHT = k;
     }
     public void setDown(KeyCode k) {
+        this.DOWN = k;
     }
     public void setRotate(KeyCode k) {
+        this.ROTATE = k;
     }
 }

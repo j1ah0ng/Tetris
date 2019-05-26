@@ -11,6 +11,8 @@ import javafx.scene.input.KeyCode;
 public abstract class World extends javafx.scene.layout.GridPane {
 
     // Attributes
+    /** Set of all keys awaiting a response. Once a key is acknowledged, it
+     * should be removed from the list. */
     private HashSet<KeyCode> keys;
     private AnimationTimer t;
 
