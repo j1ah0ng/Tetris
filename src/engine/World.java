@@ -19,12 +19,7 @@ public abstract class World extends javafx.scene.layout.GridPane {
     // Constructor
     public World() {
         keys = new HashSet<KeyCode>();
-        t = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                act(now);
-            }
-        };
+        newTimer();
     }
 
     // Methods
@@ -37,6 +32,16 @@ public abstract class World extends javafx.scene.layout.GridPane {
     public void stop() {
         t.stop();
         t = null;
+        newTimer();
+    }
+
+    private void newTimer() {
+        t = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                act(now);
+            }
+        };
     }
 
     public void addKey(KeyCode key) { keys.add(key); }
