@@ -2,9 +2,12 @@ package engine;
 
 import javafx.scene.image.Image;
 
-// Represents the different types of blocks a tetronmino
-// can take on.
+/**
+ * Enumeration Block represents all the different Block appearances a Tetromino
+ * object can take on. Each discrete Block is represented by a different Image.
+ */
 public enum Block {
+
     BLOCK_BASE ("block_base");
 
     String filename;
