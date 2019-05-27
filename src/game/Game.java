@@ -108,8 +108,8 @@ public class Game extends Application {
         root.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				Image image = new Image("file:assets/Backgrounds/cursornormal.png");
-				s.setCursor(new ImageCursor(image));
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				s.setCursor(new ImageCursor(im));
 			}
 		});
         
