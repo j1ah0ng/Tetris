@@ -31,7 +31,6 @@ public abstract class World extends javafx.scene.layout.GridPane {
 
     public void stop() {
         t.stop();
-        t = null;
         newTimer();
     }
 

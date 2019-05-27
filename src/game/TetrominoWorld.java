@@ -2,7 +2,10 @@ package game;
 
 import engine.*;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -83,7 +86,6 @@ public class TetrominoWorld extends World {
 
                 spawnNew = hasTouchedBottom;
             } else {
-
                 // Create four new Block objects and add them to the falling
                 // ArrayList
 
@@ -102,32 +104,6 @@ public class TetrominoWorld extends World {
 
             // Update runtime
             lastRun = now;
-        }
-
-        // Check rows
-        int[] rows = new int[HEIGHT];
-        for (Node i : getChildren()) {
-            if (((ImageView)i).getImage().equals(BLANK_SQUARE)) continue;
-
-            // A property of the grid is that at any given time, each x-y on the GridPane may be
-            // occupied by only one non-blank image. We exploit this property.
-            else rows[getRowIndex(i)]++;
-        }
-
-        // Collapse rows from down to up.
-        for (int i = HEIGHT-1; i >= 0; --i) {
-            // Check each row.
-            if (rows[i] >= WIDTH) {
-                // Move everything under it down and everything in it away.
-                for (Node n : getChildren()) {
-                    if (((ImageView)n).getImage().equals(BLANK_SQUARE)) continue;
-                    else {
-                        int k = getRowIndex(n);
-                        if (k == i) getChildren().remove(n);
-                        else if (k < i) setRowIndex(n, getRowIndex(n) + 1);
-                    }
-                }
-            }
         }
 
         // Move falling blocks
@@ -149,6 +125,7 @@ public class TetrominoWorld extends World {
                 // Translate blocks to points about origin
                 int[][] points = new int[4][2];
                 int xOffset = 0;
+                int yOffset = 0;
                 for (int i = 0; i < 4; ++i ) {
                     ImageView v = fallingBlocks.get(i);
                     points[i][0] = getColumnIndex(v) - xZero;
@@ -166,13 +143,18 @@ public class TetrominoWorld extends World {
                     while (points[i][0] + xOffset >= WIDTH) {
                         --xOffset;
                     }
+
+                    // Check for vertical shifting (issue only with the lonc block)
+                    while (points[i][1] + yOffset < 0) {
+                        ++yOffset;
+                    }
                 }
 
                 // Move blocks back
                 for (int i = 0; i < 4; ++i) {
                     ImageView v = fallingBlocks.get(i);
                     setColumnIndex(v, points[i][0] + xOffset);
-                    setRowIndex(v, points[i][1]);
+                    setRowIndex(v, points[i][1] + yOffset);
                 }
 
                 removeKey(ROTATE);
@@ -219,6 +201,38 @@ public class TetrominoWorld extends World {
                 }
                 removeKey(this.DONE);
             }
+        } else {
+
+            // Check if any rows need to be eliminated
+            stop();
+            int[] rows = new int[HEIGHT];
+            for (Node i : getChildren()) {
+                if (((ImageView)i).getImage().equals(BLANK_SQUARE)) continue;
+
+                    // A property of the grid is that at any given time, each x-y on the GridPane may be
+                    // occupied by only one non-blank image. We exploit this property.
+                else rows[getRowIndex(i)]++;
+            }
+
+            // Collapse rows from down to up.
+            for (int i = HEIGHT-1; i >= 0; --i) {
+                // Check each row.
+                if (rows[i] >= WIDTH) {
+                    // Move everything under it down and everything in it away.
+                    Iterator<Node> iter = getChildren().iterator();
+                    while (iter.hasNext()) {
+                        Node n = iter.next();
+                        if (((ImageView)n).getImage().equals(BLANK_SQUARE)) continue;
+                        else {
+                            int k = getRowIndex(n);
+                            if (k == i) iter.remove();
+                            else if (k < i) setRowIndex(n, getRowIndex(n) + 1);
+                        }
+                    }
+                }
+            }
+            start();
+
         }
     }
 
