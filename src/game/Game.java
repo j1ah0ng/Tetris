@@ -108,14 +108,20 @@ public class Game extends Application {
 
 		StackPane menuRoot = new StackPane();
 		Scene menuScene = new Scene(menuRoot, w, h, Color.BLACK);
-
+		menuRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				menuScene.setCursor(new ImageCursor(im));
+			}
+		});
+		
 		Image menubg = new Image("file:assets/Backgrounds/menumodebackground.jpg");
 		ImageView miv1 = new ImageView();
 
 		miv1.setFitHeight(h);
 		miv1.setFitWidth(w);
 		miv1.setImage(menubg);
-
 
 
 		HBox back = new HBox();
@@ -132,8 +138,67 @@ public class Game extends Application {
 
 		modeTitle.getChildren().add(title);
 		
+		HBox mid = new HBox();
+		mid.setPadding((new Insets(h/2, w/2, 0, w/2)));
+		mid.setSpacing(w/2);
 
-		menuRoot.getChildren().addAll(miv1, modeTitle, back);
+		Image regular = new Image("file:assets/Backgrounds/regular.png");
+		Image regularfilled = new Image("file:assets/Backgrounds/regularfilled.png");
+		ImageView mreg = new ImageView();
+		mreg.setImage(regular);
+		mreg.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mreg.setImage(regularfilled);
+			}
+		});
+		mreg.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mreg.setImage(regular);
+			}
+		});
+		
+		Image blitz = new Image("file:assets/Backgrounds/blitz.png");
+		Image blitzfilled = new Image("file:assets/Backgrounds/blitzfilled.png");
+		ImageView mblitz = new ImageView();
+		mblitz.setImage(blitz);
+		mblitz.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mblitz.setImage(blitzfilled);
+			}
+		});
+		mblitz.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mblitz.setImage(blitz);
+			}
+		});
+		
+		HBox bot = new HBox();
+		bot.setPadding((new Insets(h-h/6, w/2, 0, w/2)));
+		Image multiplayer = new Image("file:assets/Backgrounds/multiplayer.png");
+		Image multiplayerfilled = new Image("file:assets/Backgrounds/multiplayerfilled.png");
+		ImageView mmultiplayer = new ImageView();
+		mmultiplayer.setImage(multiplayer);
+		mmultiplayer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mmultiplayer.setImage(multiplayerfilled);
+			}
+		});
+		mmultiplayer.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mmultiplayer.setImage(multiplayer);
+			}
+		});
+
+		mid.getChildren().addAll(mreg, mblitz);
+		bot.getChildren().addAll(mmultiplayer);
+
+		menuRoot.getChildren().addAll(miv1, modeTitle, back, mid, bot);
 
 		
 	
