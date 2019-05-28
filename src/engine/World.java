@@ -11,18 +11,15 @@ import javafx.scene.input.KeyCode;
 public abstract class World extends javafx.scene.layout.GridPane {
 
     // Attributes
+    /** Set of all keys awaiting a response. Once a key is acknowledged, it
+     * should be removed from the list. */
     private HashSet<KeyCode> keys;
     private AnimationTimer t;
 
     // Constructor
     public World() {
         keys = new HashSet<KeyCode>();
-        t = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                act(now);
-            }
-        };
+        newTimer();
     }
 
     // Methods
@@ -34,7 +31,16 @@ public abstract class World extends javafx.scene.layout.GridPane {
 
     public void stop() {
         t.stop();
-        t = null;
+        newTimer();
+    }
+
+    private void newTimer() {
+        t = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                act(now);
+            }
+        };
     }
 
     public void addKey(KeyCode key) { keys.add(key); }
