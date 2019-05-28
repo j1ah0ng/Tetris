@@ -13,6 +13,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -42,10 +43,21 @@ public class Game extends Application {
 		miv2.setFitHeight(50);
 		miv2.setFitWidth(50);
 		
+		
+		
+		
 		// Binds scene
 
 		Pane bindsRoot = new Pane();
 		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
+		bindsRoot.setStyle("-fx-background-color: #ffffff");
+		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				bindScene.setCursor(new ImageCursor(im));
+			}
+		});
 		
 		VBox vbox1 = new VBox();
 		vbox1.setLayoutX(w/2 - 100);
@@ -59,11 +71,17 @@ public class Game extends Application {
 		
 		bindsRoot.getChildren().add(vbox1);
 		
+		
+		
+		
+		
 		// Music scene
 		
 		Pane musicRoot = new Pane();
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
-		
+		musicRoot.setStyle("-fx-background-color: #000000");
+
+		//hard to see tetromino cursor on sliderso keep default cursor
 	
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
@@ -80,7 +98,7 @@ public class Game extends Application {
 		slide.setShowTickMarks(true);
 		slide.setMajorTickUnit(10);
 		slide.setShowTickLabels(true);
-		
+				
 		vbox2.getChildren().addAll(musicTitle, slide);
 					
 		musicRoot.getChildren().addAll(vbox2);
