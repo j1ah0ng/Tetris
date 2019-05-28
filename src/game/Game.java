@@ -9,12 +9,14 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -31,7 +33,59 @@ public class Game extends Application {
 
 		int w = 800;
 		int h = 640;
+		
+		
+		
+		Image backLogo = new Image("file:assets/Backgrounds/backlogo.png");
+		ImageView miv2 = new ImageView();
+		miv2.setImage(backLogo);
+		miv2.setFitHeight(50);
+		miv2.setFitWidth(50);
+		
+		// Binds scene
 
+		Pane bindsRoot = new Pane();
+		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
+		
+		VBox vbox1 = new VBox();
+		vbox1.setLayoutX(w/2 - 100);
+		vbox1.setLayoutY(h/2 - 100);
+		
+		Text bindTitle = new Text("BINDS");
+		bindTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		bindTitle.setFill(Color.BLACK);
+		
+		vbox1.getChildren().add(bindTitle);
+		
+		bindsRoot.getChildren().add(vbox1);
+		
+		// Music scene
+		
+		Pane musicRoot = new Pane();
+		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
+		
+	
+		VBox vbox2 = new VBox();
+		vbox2.setSpacing(50);
+		vbox2.setLayoutX(w/2 - 100);
+		vbox2.setLayoutY(h/2 - 100);
+		
+		Text musicTitle = new Text("MUSIC");
+		musicTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		musicTitle.setFill(Color.WHITE);
+		
+		Slider slide = new Slider();
+		slide.setMin(0);
+		slide.setMax(100);
+		slide.setShowTickMarks(true);
+		slide.setMajorTickUnit(10);
+		slide.setShowTickLabels(true);
+		
+		vbox2.getChildren().addAll(musicTitle, slide);
+					
+		musicRoot.getChildren().addAll(vbox2);
+		
+		
 		// Modes menu scene
 
 		StackPane menuRoot = new StackPane();
@@ -44,11 +98,7 @@ public class Game extends Application {
 		miv1.setFitWidth(w);
 		miv1.setImage(menubg);
 
-		Image backLogo = new Image("file:assets/Backgrounds/backlogo.png");
-		ImageView miv2 = new ImageView();
-		miv2.setImage(backLogo);
-		miv2.setFitHeight(50);
-		miv2.setFitWidth(50);
+
 
 		HBox back = new HBox();
 		back.getChildren().add(miv2);
@@ -68,7 +118,7 @@ public class Game extends Application {
 		menuRoot.getChildren().addAll(miv1, modeTitle, back);
 
 		
-		
+	
 		
 		
 		// Start menu scene
@@ -165,6 +215,26 @@ public class Game extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
+			}
+
+		});
+		
+		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				stage.setScene(musicScene);
+
+			}
+
+		});
+		
+		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				stage.setScene(bindScene);
+
 			}
 
 		});
