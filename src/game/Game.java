@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
@@ -28,205 +27,310 @@ import javafx.stage.Stage;
 
 public class Game extends Application {
 
-    // Constants
-    static final int w = 800;
-    static final int h = 640;
+	@Override
+	public void start(Stage stage) throws Exception {
+		stage.setTitle("Tetris");
+		stage.setResizable(true);
 
-    @Override
-    public void start(Stage stage) throws Exception {
+		int w = 800;
+		int h = 640;
+		
+		
+		
+		Image backLogo = new Image("file:assets/Backgrounds/backlogo.png");
+		ImageView miv2 = new ImageView();
+		miv2.setImage(backLogo);
+		miv2.setFitHeight(50);
+		miv2.setFitWidth(50);
+		
+		
+		
+		
+		// Binds scene
 
-        // Main stage
-        stage.setTitle("Tetris");
-        stage.setResizable(true);
-        // End main stage
+		Pane bindsRoot = new Pane();
+		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
+		bindsRoot.setStyle("-fx-background-color: #ffffff");
+		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				bindScene.setCursor(new ImageCursor(im));
+			}
+		});
+		
+		VBox vbox1 = new VBox();
+		vbox1.setLayoutX(w/2 - 100);
+		vbox1.setLayoutY(h/2 - 100);
+		
+		Text bindTitle = new Text("BINDS");
+		bindTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		bindTitle.setFill(Color.BLACK);
+		
+		vbox1.getChildren().add(bindTitle);
+		
+		bindsRoot.getChildren().add(vbox1);
+		
+		
+		
+		
+		
+		// Music scene
+		
+		Pane musicRoot = new Pane();
+		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
+		musicRoot.setStyle("-fx-background-color: #000000");
 
-        // World
-        TetrominoWorld world = new TetrominoWorld(((long)1e9));
-        // End world
-
-        // Back button
-        Image backLogo = new Image("file:assets/Backgrounds/backlogo.png");
-        ImageView miv2 = new ImageView();
-        miv2.setImage(backLogo);
-        miv2.setFitHeight(50);
-        miv2.setFitWidth(50);
-        // End back button
-
-
-        // Binds scene
-        Pane bindsRoot = new Pane();
-        Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
-        bindsRoot.setStyle("-fx-background-color: #ffffff");
-        bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                Image im = new Image("file:assets/Backgrounds/cursornormal.png");
-                bindScene.setCursor(new ImageCursor(im));
-            }
-        });
-
-        VBox vbox1 = new VBox();
-        vbox1.setLayoutX(w / 2 - 100);
-        vbox1.setLayoutY(h / 2 - 100);
-
-        Text bindTitle = new Text("BINDS");
-        bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
-        bindTitle.setFill(Color.BLACK);
-
-        vbox1.getChildren().add(bindTitle);
-
-        bindsRoot.getChildren().add(vbox1);
-        // End binds scene
-
-
-        // Music scene
-        Pane musicRoot = new Pane();
-        Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
-        musicRoot.setStyle("-fx-background-color: #000000");
-
-        //hard to see tetromino cursor on sliderso keep default cursor
-        VBox vbox2 = new VBox();
-        vbox2.setSpacing(50);
-        vbox2.setLayoutX(w / 2 - 100);
-        vbox2.setLayoutY(h / 2 - 100);
-
-        Text musicTitle = new Text("MUSIC");
-        musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
-        musicTitle.setFill(Color.WHITE);
-
-        /*
+		//hard to see tetromino cursor on sliderso keep default cursor
+	
+		VBox vbox2 = new VBox();
+		vbox2.setSpacing(50);
+		vbox2.setLayoutX(w/2 - 100);
+		vbox2.setLayoutY(h/2 - 100);
+		
+		Text musicTitle = new Text("MUSIC");
+		musicTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		musicTitle.setFill(Color.WHITE);
+		
 		Slider slide = new Slider();
 		slide.setMin(0);
 		slide.setMax(100);
 		slide.setShowTickMarks(true);
 		slide.setMajorTickUnit(10);
 		slide.setShowTickLabels(true);
-         */
 				
-		// vbox2.getChildren().addAll(musicTitle, slide);
-        vbox2.getChildren().addAll(musicTitle);
+		vbox2.getChildren().addAll(musicTitle, slide);
+					
+		musicRoot.getChildren().addAll(vbox2);
+		
+		
+		// Modes menu scene
 
-        musicRoot.getChildren().addAll(vbox2);
-        // End music scene
+		StackPane menuRoot = new StackPane();
+		Scene menuScene = new Scene(menuRoot, w, h, Color.BLACK);
+		menuRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				menuScene.setCursor(new ImageCursor(im));
+			}
+		});
+		
+		Image menubg = new Image("file:assets/Backgrounds/menumodebackground.jpg");
+		ImageView miv1 = new ImageView();
+
+		miv1.setFitHeight(h);
+		miv1.setFitWidth(w);
+		miv1.setImage(menubg);
 
 
-        // Modes menu scene
-        StackPane menuRoot = new StackPane();
-        Scene menuScene = new Scene(menuRoot, w, h, Color.BLACK);
-        Image im = new Image("file:assets/Backgrounds/cursornormal.png");
-        menuRoot.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> menuScene.setCursor(new ImageCursor(im)));
-        Image menubg = new Image("file:assets/Backgrounds/menumodebackground.jpg");
-        ImageView miv1 = new ImageView();
-        miv1.setFitHeight(h);
-        miv1.setFitWidth(w);
-        miv1.setImage(menubg);
+		HBox modeTitle = new HBox();
+		Text title = new Text("MODES");
+		title.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		title.setFill(Color.WHITE);
+		
+		modeTitle.setPadding((new Insets(50, 0, 0, w/2 - 110)));
 
-        StackPane.setAlignment(miv2, Pos.TOP_LEFT);
-        menuRoot.getChildren().add(miv2);
+		modeTitle.getChildren().add(title);
+		
+		Image regular = new Image("file:assets/Backgrounds/regular.png");
+		Image regularfilled = new Image("file:assets/Backgrounds/regularfilled.png");
+		ImageView mreg = new ImageView();
+		mreg.setImage(regular);
+		mreg.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mreg.setImage(regularfilled);
+			}
+		});
+		mreg.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mreg.setImage(regular);
+			}
+		});
+		
+		Image blitz = new Image("file:assets/Backgrounds/blitz.png");
+		Image blitzfilled = new Image("file:assets/Backgrounds/blitzfilled.png");
+		ImageView mblitz = new ImageView();
+		mblitz.setImage(blitz);
+		mblitz.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mblitz.setImage(blitzfilled);
+			}
+		});
+		mblitz.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mblitz.setImage(blitz);
+			}
+		});
+		
+		Image multiplayer = new Image("file:assets/Backgrounds/multiplayer.png");
+		Image multiplayerfilled = new Image("file:assets/Backgrounds/multiplayerfilled.png");
+		ImageView mmultiplayer = new ImageView();
+		mmultiplayer.setImage(multiplayer);
+		mmultiplayer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mmultiplayer.setImage(multiplayerfilled);
+			}
+		});
+		mmultiplayer.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mmultiplayer.setImage(multiplayer);
+			}
+		});
 
-        Text title = new Text("MODES");
-        title.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
-        title.setFill(Color.WHITE);
-        StackPane.setAlignment(title, Pos.TOP_CENTER);
-        menuRoot.getChildren().add(title);
 
-        Image regular = new Image("file:assets/Backgrounds/regular.png");
-        Image regularfilled = new Image("file:assets/Backgrounds/regularfilled.png");
-        ImageView mreg = new ImageView();
-        mreg.setImage(regular);
-        mreg.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> mreg.setImage(regularfilled));
-        mreg.addEventHandler(MouseEvent.MOUSE_EXITED, e -> mreg.setImage(regular));
-        StackPane.setAlignment(mreg, Pos.CENTER_LEFT);
-        menuRoot.getChildren().add(mreg);
+		mreg.relocate(w/3, h/2);
+		mblitz.relocate(2*w/3, h/2);
+		mmultiplayer.relocate(w/2, 5*h/6);
+		
+		mreg.setTranslateX(-1*w/3);
+		mblitz.setTranslateX(w/3);
+		mmultiplayer.setTranslateY(h/3);
+		miv2.setTranslateX(25+(-1*w/2));
+		miv2.setTranslateY(25+(-1*h/2));
+		
+		menuRoot.getChildren().addAll(miv1, modeTitle, miv2, mreg, mblitz, mmultiplayer);
+		
+		
+		// Start menu scene
 
-        Image blitz = new Image("file:assets/Backgrounds/blitz.png");
-        Image blitzfilled = new Image("file:assets/Backgrounds/blitzfilled.png");
-        ImageView mblitz = new ImageView();
-        mblitz.setImage(blitz);
-        mblitz.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> mblitz.setImage(blitzfilled));
-        mblitz.addEventHandler(MouseEvent.MOUSE_EXITED, e -> mblitz.setImage(blitz));
-        StackPane.setAlignment(mblitz, Pos.CENTER_RIGHT);
-        menuRoot.getChildren().add(mblitz);
+		StackPane root = new StackPane();
+		Scene s = new Scene(root, w, h, Color.BLACK);
 
-        Image multiplayer = new Image("file:assets/Backgrounds/multiplayer.png");
-        Image multiplayerfilled = new Image("file:assets/Backgrounds/multiplayerfilled.png");
-        ImageView mmultiplayer = new ImageView();
-        mmultiplayer.setImage(multiplayer);
-        mmultiplayer.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> mmultiplayer.setImage(multiplayerfilled));
-        mmultiplayer.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> mmultiplayer.setImage(multiplayer));
-        StackPane.setAlignment(mmultiplayer, Pos.BOTTOM_CENTER);
-        menuRoot.getChildren().add(mmultiplayer);
-        // End modes scene
+		Image bg = new Image("file:assets/Backgrounds/tetrisstartmenu.png");
+		ImageView iv1 = new ImageView();
 
-        // Start menu scene
-        StackPane root = new StackPane();
-        Scene s = new Scene(root, w, h, Color.BLACK);
+		iv1.setFitWidth(w);
+		iv1.setFitHeight(h);
+		iv1.setImage(bg);
+		root.getChildren().add(iv1);
 
-        Image bg = new Image("file:assets/Backgrounds/tetrisstartmenu.png");
-        ImageView iv1 = new ImageView();
+		ImageView iv2 = new ImageView();
+		HBox hb1 = new HBox();
+		Image modes = new Image("file:assets/Backgrounds/modes.png");
+		Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
+		// setfitwidth and height
+		iv2.setImage(modes);
+		hb1.getChildren().add(iv2);
 
-        iv1.setFitWidth(w);
-        iv1.setFitHeight(h);
-        iv1.setImage(bg);
-        root.getChildren().add(iv1);
+		ImageView iv3 = new ImageView();
+		// HBox hb2 = new HBox();
+		Image music = new Image("file:assets/Backgrounds/music.png");
+		Image musicfilled = new Image("file:assets/Backgrounds/musicfilled.png");
+		iv3.setImage(music);
+		hb1.getChildren().add(iv3);
 
-        ImageView iv2 = new ImageView();
-        HBox hb1 = new HBox();
-        Image modes = new Image("file:assets/Backgrounds/modes.png");
-        Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
-        iv2.setImage(modes);
-        hb1.getChildren().add(iv2);
+		ImageView iv4 = new ImageView();
+		// HBox hb2 = new HBox();
+		Image binds = new Image("file:assets/Backgrounds/binds.png");
+		Image bindsfilled = new Image("file:assets/Backgrounds/bindsfilled.png");
+		iv4.setImage(binds);
+		hb1.getChildren().add(iv4);
 
-        ImageView iv3 = new ImageView();
-        Image music = new Image("file:assets/Backgrounds/music.png");
-        Image musicfilled = new Image("file:assets/Backgrounds/musicfilled.png");
-        iv3.setImage(music);
-        hb1.getChildren().add(iv3);
+		hb1.setPadding(new Insets(100, 100, 400, 100));
+		hb1.setSpacing(75);
 
-        ImageView iv4 = new ImageView();
-        Image binds = new Image("file:assets/Backgrounds/binds.png");
-        Image bindsfilled = new Image("file:assets/Backgrounds/bindsfilled.png");
-        iv4.setImage(binds);
-        hb1.getChildren().add(iv4);
+		iv2.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv2.setImage(modesfilled);
+			}
+		});
+		iv2.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv2.setImage(modes);
+			}
+		});
 
-        hb1.setPadding(new Insets(100, 100, 400, 100));
-        hb1.setSpacing(75);
-            // Mouse enter events
-        iv2.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> iv2.setImage(modesfilled));
-        iv3.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> iv3.setImage(musicfilled));
-        iv4.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> iv4.setImage(bindsfilled));
-            // Mouse exit events
-        iv2.addEventHandler(MouseEvent.MOUSE_EXITED, e -> iv2.setImage(modes));
-        iv3.addEventHandler(MouseEvent.MOUSE_EXITED, e -> iv3.setImage(music));
-        iv4.addEventHandler(MouseEvent.MOUSE_EXITED, e -> iv4.setImage(binds));
-            // Back button event
-        miv2.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> stage.setScene(s));
-            // Click events
-        iv2.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> stage.setScene(menuScene));
-        iv3.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> stage.setScene(musicScene));
-        iv4.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> stage.setScene(bindScene));
+		iv3.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv3.setImage(musicfilled);
+			}
+		});
+		iv3.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv3.setImage(music);
+			}
+		});
 
-        root.getChildren().addAll(hb1);
-        // End start menu
+		iv4.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv4.setImage(bindsfilled);
+			}
+		});
+		iv4.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				iv4.setImage(binds);
+			}
+		});
 
-        // Set cursor
-        root.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent e) {
-                Image im = new Image("file:assets/Backgrounds/cursornormal.png");
-                s.setCursor(new ImageCursor(im));
-            }
-        });
-        // End set cursor
+		// Event handlers for buttons clicked
 
-        stage.setScene(s);
-        stage.show();
-    }
+		iv2.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+			@Override
+			public void handle(MouseEvent arg0) {
+				stage.setScene(menuScene);
+
+			}
+
+		});
+
+		miv2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(s);
+			}
+
+		});
+		
+		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				stage.setScene(musicScene);
+
+			}
+
+		});
+		
+		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent arg0) {
+				stage.setScene(bindScene);
+
+			}
+
+		});
+
+		root.getChildren().addAll(hb1);
+
+		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				s.setCursor(new ImageCursor(im));
+			}
+		});
+
+		stage.setScene(s);
+		stage.show();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 }
