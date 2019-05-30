@@ -37,18 +37,31 @@ public class Game extends Application {
 		
 		
 		
-		Image backLogo = new Image("file:assets/Backgrounds/backlogo.png");
+		Image backLogo = new Image("file:assets/Backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
 		miv2.setImage(backLogo);
 		miv2.setFitHeight(50);
 		miv2.setFitWidth(50);
+		miv2.setTranslateX(25+(-1*w/2));
+		miv2.setTranslateY(25+(-1*h/2));
 		
+		ImageView miv3 = new ImageView();
+		miv3.setImage(backLogo);
+		miv3.setFitHeight(50);
+		miv3.setFitWidth(50);
+		miv3.setTranslateX(25+(-1*w/2));
+		miv3.setTranslateY(25+(-1*h/2));
 		
-		
+		ImageView miv4 = new ImageView();
+		miv4.setImage(backLogo);
+		miv4.setFitHeight(50);
+		miv4.setFitWidth(50);
+		miv4.setTranslateX(25+(-1*w/2));
+		miv4.setTranslateY(25+(-1*h/2));
 		
 		// Binds scene
 
-		Pane bindsRoot = new Pane();
+		StackPane bindsRoot = new StackPane();
 		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
 		bindsRoot.setStyle("-fx-background-color: #ffffff");
 		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -69,15 +82,13 @@ public class Game extends Application {
 		
 		vbox1.getChildren().add(bindTitle);
 		
-		bindsRoot.getChildren().add(vbox1);
+		vbox1.setPadding(new Insets(h/3,w/2,0,w/2));
 		
-		
-		
-		
+		bindsRoot.getChildren().addAll(vbox1, miv3);
 		
 		// Music scene
 		
-		Pane musicRoot = new Pane();
+		StackPane musicRoot = new StackPane();
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
 		musicRoot.setStyle("-fx-background-color: #000000");
 
@@ -100,8 +111,11 @@ public class Game extends Application {
 		slide.setShowTickLabels(true);
 				
 		vbox2.getChildren().addAll(musicTitle, slide);
+		
+		vbox2.setPadding(new Insets(h/3,w/2,0,w/2));
+
 					
-		musicRoot.getChildren().addAll(vbox2);
+		musicRoot.getChildren().addAll(vbox2, miv4);
 		
 		
 		// Modes menu scene
@@ -183,17 +197,10 @@ public class Game extends Application {
 				mmultiplayer.setImage(multiplayer);
 			}
 		});
-
-
-		mreg.relocate(w/3, h/2);
-		mblitz.relocate(2*w/3, h/2);
-		mmultiplayer.relocate(w/2, 5*h/6);
 		
 		mreg.setTranslateX(-1*w/3);
 		mblitz.setTranslateX(w/3);
 		mmultiplayer.setTranslateY(h/3);
-		miv2.setTranslateX(25+(-1*w/2));
-		miv2.setTranslateY(25+(-1*h/2));
 		
 		menuRoot.getChildren().addAll(miv1, modeTitle, miv2, mreg, mblitz, mmultiplayer);
 		
@@ -215,7 +222,7 @@ public class Game extends Application {
 		HBox hb1 = new HBox();
 		Image modes = new Image("file:assets/Backgrounds/modes.png");
 		Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
-		// setfitwidth and height
+		// setfitwidth and height?
 		iv2.setImage(modes);
 		hb1.getChildren().add(iv2);
 
@@ -242,6 +249,7 @@ public class Game extends Application {
 				iv2.setImage(modesfilled);
 			}
 		});
+		
 		iv2.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -255,6 +263,7 @@ public class Game extends Application {
 				iv3.setImage(musicfilled);
 			}
 		});
+		
 		iv3.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -278,42 +287,46 @@ public class Game extends Application {
 		// Event handlers for buttons clicked
 
 		iv2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(MouseEvent arg0) {
 				stage.setScene(menuScene);
-
 			}
-
 		});
 
 		miv2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
 			}
-
+		});
+		
+		miv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(s);
+			}
+		});
+		
+		miv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(s);
+			}
 		});
 		
 		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(MouseEvent arg0) {
 				stage.setScene(musicScene);
-
 			}
-
 		});
 		
 		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 			@Override
 			public void handle(MouseEvent arg0) {
 				stage.setScene(bindScene);
 
 			}
-
 		});
 
 		root.getChildren().addAll(hb1);
