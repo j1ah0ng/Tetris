@@ -46,6 +46,7 @@ public class TetrominoWorld extends World {
 
     // Attributes
     private long delay;             // Delay between display updates
+    private long delayAccel;        // d(delay)/dt in seconds per second
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
     private boolean hasTouchedBottom;
@@ -103,6 +104,13 @@ public class TetrominoWorld extends World {
 
                     spawnNew = hasTouchedBottom = false;
 
+                    // Create new tetromino for nextBlocks
+                    blockType = (int) (Math.random() * BLOCKS.length);
+                    nextBlocks = new ArrayList<ImageView>();
+                    for (int i = 0; i < 4; ++i) {
+                        nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                    }
+
                     // Deal with next case
                     nextTetromino = (int) (Math.random() * 6);
                 }
@@ -121,9 +129,8 @@ public class TetrominoWorld extends World {
                         nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
                     }
 
-                    // Deal with nexst case
+                    // Deal with next case
                     nextTetromino = (int) (Math.random() * 6);
-
 
                     spawnNew = hasTouchedBottom = false;
                 }
@@ -347,6 +354,11 @@ public class TetrominoWorld extends World {
     public void setDone(KeyCode k) {
         this.DONE = k;
     }
+    public KeyCode getLeft() { return this.LEFT; }
+    public KeyCode getRight() { return this.RIGHT; }
+    public KeyCode getDown() { return this.DOWN; }
+    public KeyCode getRotate() { return this.ROTATE; }
+    public KeyCode getDone() { return this.DONE; }
 
     /** Fills the board with blank Blocks. */
     public void initialise() {
@@ -383,6 +395,53 @@ public class TetrominoWorld extends World {
 
     // Mode-specific commands
     public GridPane getNextTetromino() {
-       return new GridPane();
+        GridPane upcoming = new GridPane();
+
+        switch (nextTetromino) {
+            case 0:
+                // L-shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 6, 1);
+                upcoming.add(nextBlocks.get(2), 6, 2);
+                upcoming.add(nextBlocks.get(3), 7, 2);
+                upcoming.break;
+            case 1:
+                // Square shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 7, 0);
+                upcoming.add(nextBlocks.get(2), 6, 1);
+                upcoming.add(nextBlocks.get(3), 7, 1);
+                upcoming.break;
+            case 2:
+                // T-shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 5, 0);
+                upcoming.add(nextBlocks.get(2), 7, 0);
+                upcoming.add(nextBlocks.get(3), 6, 1);
+                upcoming.break;
+            case 3:
+                // Straight shape.
+                upcoming.add(nextBlocks.get(0), 5, 0);
+                upcoming.add(nextBlocks.get(1), 6, 0);
+                upcoming.add(nextBlocks.get(2), 7, 0);
+                upcoming.add(nextBlocks.get(3), 8, 0);
+                upcoming.break;
+            case 4:
+                // Z-shape
+                upcoming.add(nextBlocks.get(0), 5, 0);
+                upcoming.add(nextBlocks.get(1), 6, 0);
+                upcoming.add(nextBlocks.get(2), 6, 1);
+                upcoming.add(nextBlocks.get(3), 7, 1);
+                upcoming.break;
+            case 5:
+                // Inverse Z-shape.
+                upcoming.add(nextBlocks.get(0), 5, 1);
+                upcoming.add(nextBlocks.get(1), 6, 1);
+                upcoming.add(nextBlocks.get(2), 6, 0);
+                upcoming.add(nextBlocks.get(3), 7, 0);
+                break;
+        }
+
+        return upcoming;
     }
 }
