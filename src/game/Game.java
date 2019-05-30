@@ -103,7 +103,8 @@ public class Game extends Application {
 		slide.setShowTickLabels(true);
          */
 				
-		//vbox2.getChildren().addAll(musicTitle, slide);
+		// vbox2.getChildren().addAll(musicTitle, slide);
+        vbox2.getChildren().addAll(musicTitle);
 
         musicRoot.getChildren().addAll(vbox2);
         // End music scene
