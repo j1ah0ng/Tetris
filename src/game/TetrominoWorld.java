@@ -63,6 +63,18 @@ public class TetrominoWorld extends World {
         spawnNew = true;
         hasTouchedBottom = false;
         this.delay = delay;
+        this.delayAccel = 0;
+
+        initialise();
+    }
+
+    public TetrominoWorld(long delay, long delayAccel) {
+        super();
+        lastRun = 0;
+        spawnNew = true;
+        hasTouchedBottom = false;
+        this.delay = delay;
+        this.delayAccel = delayAccel;
 
         initialise();
     }
@@ -74,6 +86,8 @@ public class TetrominoWorld extends World {
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
             System.out.println("Time: " + System.currentTimeMillis());
+
+            delay += (delayAccel) * (now - lastRun);
 
             // Block movements and check collisions
             if (!spawnNew) {
