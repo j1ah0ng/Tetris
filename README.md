@@ -1,7 +1,10 @@
 # Tetris!
 
-By:
-	Mario Alkhoury
-	Jiahong Long
-	Ryan Yavari
+Authored by
+
+1. Mario Alkhoury
+
+2. Jiahong Long
+
+3. Ryan Yavari
 
