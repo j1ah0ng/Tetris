@@ -46,12 +46,15 @@ public class TetrominoWorld extends World {
 
     // Attributes
     private long delay;             // Delay between display updates
+    private long delayAccel;        // d(delay)/dt in seconds per second
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
     private boolean hasTouchedBottom;
     // Flag variable for having touched the bottom stack
 
     ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
+    ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
+    int nextTetromino;              // int representing ID of the next falling tetromino
 
     // Constructors
     public TetrominoWorld(long delay) {
@@ -60,6 +63,18 @@ public class TetrominoWorld extends World {
         spawnNew = true;
         hasTouchedBottom = false;
         this.delay = delay;
+        this.delayAccel = 0;
+
+        initialise();
+    }
+
+    public TetrominoWorld(long delay, long delayAccel) {
+        super();
+        lastRun = 0;
+        spawnNew = true;
+        hasTouchedBottom = false;
+        this.delay = delay;
+        this.delayAccel = delayAccel;
 
         initialise();
     }
@@ -71,6 +86,8 @@ public class TetrominoWorld extends World {
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
             System.out.println("Time: " + System.currentTimeMillis());
+
+            delay += (delayAccel) * (now - lastRun);
 
             // Block movements and check collisions
             if (!spawnNew) {
@@ -86,20 +103,51 @@ public class TetrominoWorld extends World {
 
                 spawnNew = hasTouchedBottom;
             } else {
-                // Create four new Block objects and add them to the falling
-                // ArrayList
 
-                // Randomise block appearance
-                int blockType = (int)(Math.random() * BLOCKS.length);
-                fallingBlocks = new ArrayList<ImageView>();
-                for (int i = 0; i < 4; ++i) {
-                    fallingBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+
+                if (fallingBlocks.size() == 0) {        // Deal with first run scenario
+                    // Randomise block appearance
+                    int blockType = (int) (Math.random() * BLOCKS.length);
+                    fallingBlocks = new ArrayList<ImageView>();
+                    for (int i = 0; i < 4; ++i) {
+                        fallingBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                    }
+
+                    // Arrange the blocks in the ArrayList accordingly
+                    buildTetromino(fallingBlocks, (int) (6 * Math.random()));
+
+                    spawnNew = hasTouchedBottom = false;
+
+                    // Create new tetromino for nextBlocks
+                    blockType = (int) (Math.random() * BLOCKS.length);
+                    nextBlocks = new ArrayList<ImageView>();
+                    for (int i = 0; i < 4; ++i) {
+                        nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                    }
+
+                    // Deal with next case
+                    nextTetromino = (int) (Math.random() * 6);
                 }
 
-                // Arrange the blocks in the ArrayList accordingly
-                buildTetromino(fallingBlocks);
+                else {
+                    // Make the currently falling block the next one
+                    fallingBlocks = nextBlocks;
 
-                spawnNew = hasTouchedBottom = false;
+                    // Arrange the blocks in the ArrayList accordingly
+                    buildTetromino(fallingBlocks, nextTetromino);
+
+                    // Create new tetromino for nextBlocks
+                    int blockType = (int) (Math.random() * BLOCKS.length);
+                    nextBlocks = new ArrayList<ImageView>();
+                    for (int i = 0; i < 4; ++i) {
+                        nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+                    }
+
+                    // Deal with next case
+                    nextTetromino = (int) (Math.random() * 6);
+
+                    spawnNew = hasTouchedBottom = false;
+                }
             }
 
             // Update runtime
@@ -250,12 +298,15 @@ public class TetrominoWorld extends World {
      *
      * @param list ArrayList<ImageView> of length 4
      */
-    public void buildTetromino(ArrayList<ImageView> list) {
+    public void buildTetromino(ArrayList<ImageView> list, int r) {
 
         if (list.size() != 4) return;
 
+        /*  Deprecated due to issues
         // Randomise.
         int r = (int)(6 * Math.random());
+         */
+
         switch (r) {
             case 0:
                 // L-shape.
@@ -317,6 +368,11 @@ public class TetrominoWorld extends World {
     public void setDone(KeyCode k) {
         this.DONE = k;
     }
+    public KeyCode getLeft() { return this.LEFT; }
+    public KeyCode getRight() { return this.RIGHT; }
+    public KeyCode getDown() { return this.DOWN; }
+    public KeyCode getRotate() { return this.ROTATE; }
+    public KeyCode getDone() { return this.DONE; }
 
     /** Fills the board with blank Blocks. */
     public void initialise() {
@@ -328,6 +384,8 @@ public class TetrominoWorld extends World {
                 add(BLANK_GRID[row][col], col, row);
             }
         }
+
+        this.fallingBlocks = new ArrayList<ImageView>();
     }
 
     public boolean checkCollisions() {
@@ -347,5 +405,57 @@ public class TetrominoWorld extends World {
             }
         }
         return flag;
+    }
+
+    // Mode-specific commands
+    public GridPane getNextTetromino() {
+        GridPane upcoming = new GridPane();
+
+        switch (nextTetromino) {
+            case 0:
+                // L-shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 6, 1);
+                upcoming.add(nextBlocks.get(2), 6, 2);
+                upcoming.add(nextBlocks.get(3), 7, 2);
+                upcoming.break;
+            case 1:
+                // Square shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 7, 0);
+                upcoming.add(nextBlocks.get(2), 6, 1);
+                upcoming.add(nextBlocks.get(3), 7, 1);
+                upcoming.break;
+            case 2:
+                // T-shape.
+                upcoming.add(nextBlocks.get(0), 6, 0);
+                upcoming.add(nextBlocks.get(1), 5, 0);
+                upcoming.add(nextBlocks.get(2), 7, 0);
+                upcoming.add(nextBlocks.get(3), 6, 1);
+                upcoming.break;
+            case 3:
+                // Straight shape.
+                upcoming.add(nextBlocks.get(0), 5, 0);
+                upcoming.add(nextBlocks.get(1), 6, 0);
+                upcoming.add(nextBlocks.get(2), 7, 0);
+                upcoming.add(nextBlocks.get(3), 8, 0);
+                upcoming.break;
+            case 4:
+                // Z-shape
+                upcoming.add(nextBlocks.get(0), 5, 0);
+                upcoming.add(nextBlocks.get(1), 6, 0);
+                upcoming.add(nextBlocks.get(2), 6, 1);
+                upcoming.add(nextBlocks.get(3), 7, 1);
+                upcoming.break;
+            case 5:
+                // Inverse Z-shape.
+                upcoming.add(nextBlocks.get(0), 5, 1);
+                upcoming.add(nextBlocks.get(1), 6, 1);
+                upcoming.add(nextBlocks.get(2), 6, 0);
+                upcoming.add(nextBlocks.get(3), 7, 0);
+                break;
+        }
+
+        return upcoming;
     }
 }
