@@ -371,6 +371,7 @@ public class TetrominoWorld extends World {
     public KeyCode getLeft() { return this.LEFT; }
     public KeyCode getRight() { return this.RIGHT; }
     public KeyCode getDown() { return this.DOWN; }
+    @Override
     public KeyCode getRotate() { return this.ROTATE; }
     public KeyCode getDone() { return this.DONE; }
 
