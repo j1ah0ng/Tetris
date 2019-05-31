@@ -47,6 +47,7 @@ public class Game extends Application {
 		miv2.setImage(backLogo);
 		miv2.setFitHeight(50);
 		miv2.setFitWidth(50);
+		miv2.setPickOnBounds(true);
 		miv2.setTranslateX(25 + (-1 * w / 2));
 		miv2.setTranslateY(25 + (-1 * h / 2));
 
@@ -54,6 +55,7 @@ public class Game extends Application {
 		miv3.setImage(backLogo);
 		miv3.setFitHeight(50);
 		miv3.setFitWidth(50);
+		miv3.setPickOnBounds(true);
 		miv3.setTranslateX(25 + (-1 * w / 2));
 		miv3.setTranslateY(25 + (-1 * h / 2));
 
@@ -61,6 +63,7 @@ public class Game extends Application {
 		miv4.setImage(backLogo);
 		miv4.setFitHeight(50);
 		miv4.setFitWidth(50);
+		miv4.setPickOnBounds(true);
 		miv4.setTranslateX(25 + (-1 * w / 2));
 		miv4.setTranslateY(25 + (-1 * h / 2));
 
