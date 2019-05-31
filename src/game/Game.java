@@ -34,31 +34,29 @@ public class Game extends Application {
 
 		int w = 800;
 		int h = 640;
-		
-		
-		
+
 		Image backLogo = new Image("file:assets/Backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
 		miv2.setImage(backLogo);
 		miv2.setFitHeight(50);
 		miv2.setFitWidth(50);
-		miv2.setTranslateX(25+(-1*w/2));
-		miv2.setTranslateY(25+(-1*h/2));
-		
+		miv2.setTranslateX(25 + (-1 * w / 2));
+		miv2.setTranslateY(25 + (-1 * h / 2));
+
 		ImageView miv3 = new ImageView();
 		miv3.setImage(backLogo);
 		miv3.setFitHeight(50);
 		miv3.setFitWidth(50);
-		miv3.setTranslateX(25+(-1*w/2));
-		miv3.setTranslateY(25+(-1*h/2));
-		
+		miv3.setTranslateX(25 + (-1 * w / 2));
+		miv3.setTranslateY(25 + (-1 * h / 2));
+
 		ImageView miv4 = new ImageView();
 		miv4.setImage(backLogo);
 		miv4.setFitHeight(50);
 		miv4.setFitWidth(50);
-		miv4.setTranslateX(25+(-1*w/2));
-		miv4.setTranslateY(25+(-1*h/2));
-		
+		miv4.setTranslateX(25 + (-1 * w / 2));
+		miv4.setTranslateY(25 + (-1 * h / 2));
+
 		// Binds scene
 
 		StackPane bindsRoot = new StackPane();
@@ -71,53 +69,51 @@ public class Game extends Application {
 				bindScene.setCursor(new ImageCursor(im));
 			}
 		});
-		
+
 		VBox vbox1 = new VBox();
-		vbox1.setLayoutX(w/2 - 100);
-		vbox1.setLayoutY(h/2 - 100);
-		
+		vbox1.setLayoutX(w / 2 - 100);
+		vbox1.setLayoutY(h / 2 - 100);
+
 		Text bindTitle = new Text("BINDS");
-		bindTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		bindTitle.setFill(Color.BLACK);
-		
+
 		vbox1.getChildren().add(bindTitle);
-		
-		vbox1.setPadding(new Insets(h/3,w/2,0,w/2));
-		
+
+		vbox1.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
+
 		bindsRoot.getChildren().addAll(vbox1, miv3);
-		
+
 		// Music scene
-		
+
 		StackPane musicRoot = new StackPane();
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
 		musicRoot.setStyle("-fx-background-color: #000000");
 
-		//hard to see tetromino cursor on sliderso keep default cursor
-	
+		// hard to see tetromino cursor on sliderso keep default cursor
+
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
-		vbox2.setLayoutX(w/2 - 100);
-		vbox2.setLayoutY(h/2 - 100);
-		
+		vbox2.setLayoutX(w / 2 - 100);
+		vbox2.setLayoutY(h / 2 - 100);
+
 		Text musicTitle = new Text("MUSIC");
-		musicTitle.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		musicTitle.setFill(Color.WHITE);
-		
+
 		Slider slide = new Slider();
 		slide.setMin(0);
 		slide.setMax(100);
 		slide.setShowTickMarks(true);
 		slide.setMajorTickUnit(10);
 		slide.setShowTickLabels(true);
-				
-		vbox2.getChildren().addAll(musicTitle, slide);
-		
-		vbox2.setPadding(new Insets(h/3,w/2,0,w/2));
 
-					
+		vbox2.getChildren().addAll(musicTitle, slide);
+
+		vbox2.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
+
 		musicRoot.getChildren().addAll(vbox2, miv4);
-		
-		
+
 		// Modes menu scene
 
 		StackPane menuRoot = new StackPane();
@@ -129,7 +125,7 @@ public class Game extends Application {
 				menuScene.setCursor(new ImageCursor(im));
 			}
 		});
-		
+
 		Image menubg = new Image("file:assets/Backgrounds/menumodebackground.jpg");
 		ImageView miv1 = new ImageView();
 
@@ -137,16 +133,15 @@ public class Game extends Application {
 		miv1.setFitWidth(w);
 		miv1.setImage(menubg);
 
-
 		HBox modeTitle = new HBox();
 		Text title = new Text("MODES");
-		title.setFont(Font.font ("Impact", FontWeight.EXTRA_BOLD, 80));
+		title.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		title.setFill(Color.WHITE);
-		
-		modeTitle.setPadding((new Insets(50, 0, 0, w/2 - 110)));
+
+		modeTitle.setPadding((new Insets(50, 0, 0, w / 2 - 110)));
 
 		modeTitle.getChildren().add(title);
-		
+
 		Image regular = new Image("file:assets/Backgrounds/regular.png");
 		Image regularfilled = new Image("file:assets/Backgrounds/regularfilled.png");
 		ImageView mreg = new ImageView();
@@ -163,7 +158,7 @@ public class Game extends Application {
 				mreg.setImage(regular);
 			}
 		});
-		
+
 		Image blitz = new Image("file:assets/Backgrounds/blitz.png");
 		Image blitzfilled = new Image("file:assets/Backgrounds/blitzfilled.png");
 		ImageView mblitz = new ImageView();
@@ -180,7 +175,7 @@ public class Game extends Application {
 				mblitz.setImage(blitz);
 			}
 		});
-		
+
 		Image multiplayer = new Image("file:assets/Backgrounds/multiplayer.png");
 		Image multiplayerfilled = new Image("file:assets/Backgrounds/multiplayerfilled.png");
 		ImageView mmultiplayer = new ImageView();
@@ -197,14 +192,13 @@ public class Game extends Application {
 				mmultiplayer.setImage(multiplayer);
 			}
 		});
-		
-		mreg.setTranslateX(-1*w/3);
-		mblitz.setTranslateX(w/3);
-		mmultiplayer.setTranslateY(h/3);
-		
+
+		mreg.setTranslateX(-1 * w / 3);
+		mblitz.setTranslateX(w / 3);
+		mmultiplayer.setTranslateY(h / 3);
+
 		menuRoot.getChildren().addAll(miv1, modeTitle, miv2, mreg, mblitz, mmultiplayer);
-		
-		
+
 		// Start menu scene
 
 		StackPane root = new StackPane();
@@ -243,13 +237,72 @@ public class Game extends Application {
 		hb1.setPadding(new Insets(100, 100, 400, 100));
 		hb1.setSpacing(75);
 
+		// regular mode
+		StackPane regPane = new StackPane();
+		Scene regularScene = new Scene(regPane, w, h, Color.BLACK);
+
+		Image regbg = new Image("file:assets/Backgrounds/regularmodebackground.jpg");
+		ImageView riv = new ImageView();
+		riv.setImage(regbg);
+		riv.setFitHeight(h);
+		riv.setFitWidth(w);
+
+		regPane.getChildren().addAll(riv);
+
+		mreg.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(regularScene);
+			}
+		});
+
+		// multiplayer mode
+		StackPane mPane = new StackPane();
+		Scene multiplayerScene = new Scene(mPane, w, h, Color.BLACK);
+
+		Image multbg = new Image("file:assets/Backgrounds/2playerbackground.png");
+		ImageView multiv = new ImageView();
+		multiv.setImage(multbg);
+		multiv.setFitHeight(h);
+		multiv.setFitWidth(w);
+
+		mPane.getChildren().addAll(multiv);
+
+		mmultiplayer.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(multiplayerScene);
+			}
+		});
+
+
+		// StackPane regPane = new StackPane();
+		StackPane blitzPane = new StackPane();
+
+		Scene blitzScene = new Scene(blitzPane, w, h, Color.BLACK);
+
+		Image blitzbg = new Image("file:assets/Backgrounds/blitzmodebackground.jpg");
+		ImageView biv = new ImageView();
+		biv.setImage(blitzbg);
+		biv.setFitHeight(h);
+		biv.setFitWidth(w);
+
+		blitzPane.getChildren().addAll(biv);
+
+		mblitz.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(blitzScene);
+			}
+		});
+
 		iv2.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
 				iv2.setImage(modesfilled);
 			}
 		});
-		
+
 		iv2.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -263,7 +316,7 @@ public class Game extends Application {
 				iv3.setImage(musicfilled);
 			}
 		});
-		
+
 		iv3.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -299,28 +352,28 @@ public class Game extends Application {
 				stage.setScene(s);
 			}
 		});
-		
+
 		miv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
 			}
 		});
-		
+
 		miv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
 			}
 		});
-		
+
 		iv3.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
 				stage.setScene(musicScene);
 			}
 		});
-		
+
 		iv4.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
