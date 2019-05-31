@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -29,6 +31,11 @@ public class Game extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+	    //Media m = new Media(null);//import needs verifying also
+		//need audio files to check if this even works
+		
+		//MediaPlayer mp = new MediaPlayer(m); //import needs verifying
+		
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
 
@@ -107,7 +114,8 @@ public class Game extends Application {
 		slide.setShowTickMarks(true);
 		slide.setMajorTickUnit(10);
 		slide.setShowTickLabels(true);
-
+		//slide.setValue(mp.getVolume());
+		
 		vbox2.getChildren().addAll(musicTitle, slide);
 
 		vbox2.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
