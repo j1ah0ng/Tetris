@@ -38,11 +38,16 @@ public class TetrominoWorld extends World {
     /* End static types */
 
     // Keycode bindings
-    public KeyCode ROTATE = KeyCode.R;
-    public KeyCode DOWN = KeyCode.DOWN;
-    public KeyCode LEFT = KeyCode.LEFT;
-    public KeyCode RIGHT = KeyCode.RIGHT;
-    public KeyCode DONE = KeyCode.SPACE;
+    private KeyCode ROTATE = KeyCode.R;
+    private KeyCode DOWN = KeyCode.DOWN;
+    private KeyCode LEFT = KeyCode.LEFT;
+    private KeyCode RIGHT = KeyCode.RIGHT;
+    private KeyCode DONE = KeyCode.SPACE;
+
+    // Gamemode flag
+    private final boolean MULTIPLAYER;
+
+    // Flags relevant only to multiplayer mode
 
     // Attributes
     private long delay;             // Delay between display updates
@@ -64,6 +69,7 @@ public class TetrominoWorld extends World {
         hasTouchedBottom = false;
         this.delay = delay;
         this.delayAccel = 0;
+        MULTIPLAYER = false;
 
         initialise();
     }
@@ -75,13 +81,38 @@ public class TetrominoWorld extends World {
         hasTouchedBottom = false;
         this.delay = delay;
         this.delayAccel = delayAccel;
+        MULTIPLAYER = false;
 
         initialise();
     }
 
-    // Methods
+    public TetrominoWorld(long delay, long delayAccel, boolean multiplayer) {
+        super();
+        lastRun = 0;
+        spawnNew = true;
+        hasTouchedBottom = false;
+        this.delay = delay;
+        this.delayAccel = delayAccel;
+        MULTIPLAYER = true;
+
+        initialise();
+    }
+
+    // Public getter and setter functions
+    public void setLeft(KeyCode k) { this.LEFT = k; }
+    public void setRight(KeyCode k) { this.RIGHT = k; }
+    public void setDown(KeyCode k) { this.DOWN = k; }
+    public void setRot(KeyCode k) { this.ROTATE = k; }
+    public void setDone(KeyCode k) { this.DONE = k; }
+    public KeyCode getLeft() { return this.LEFT; }
+    public KeyCode getRight() { return this.RIGHT; }
+    public KeyCode getDown() { return this.DOWN; }
+    public KeyCode getRot() { return this.ROTATE; }
+    public KeyCode getDone() { return this.DONE; }
+
+    // Main loop function
     @Override
-    public void act(long now) {
+    protected void act(long now) {
 
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
@@ -98,7 +129,7 @@ public class TetrominoWorld extends World {
                         // Move blocks down
                         setRowIndex(view, getRowIndex(view) + 1);
                     }
-                    hasTouchedBottom = checkCollisions();
+                    hasTouchedBottom = checkCollisions(0, -1);
                 }
 
                 spawnNew = hasTouchedBottom;
@@ -215,7 +246,7 @@ public class TetrominoWorld extends World {
                     for (ImageView i : fallingBlocks) {
                         setRowIndex(i, getRowIndex(i) + 1);
                     }
-                    hasTouchedBottom = checkCollisions();
+                    hasTouchedBottom = checkCollisions(0, -1);
                 }
                 removeKey(this.DOWN);
             } else if (hasKey(this.LEFT)) {
@@ -245,7 +276,7 @@ public class TetrominoWorld extends World {
                     for (ImageView i : fallingBlocks) {
                         setRowIndex(i, getRowIndex(i) + 1);
                     }
-                    hasTouchedBottom = checkCollisions();
+                    hasTouchedBottom = checkCollisions(0, -1);
                 }
                 removeKey(this.DONE);
             }
@@ -284,12 +315,13 @@ public class TetrominoWorld extends World {
         }
     }
 
+    // Private helper functions
     /** Rotates a point clockwise by 90 degrees represented as int[] {x, y}.
      *
      * @param point A point to be rotated represented as int[] {x, y}
      * @return A rotated point represented as int[] {x, y}
      */
-    public int[] rotatePoint(int[] point) {
+    private int[] rotatePoint(int[] point) {
         return new int[] {(R_MAT[0][0] * point[0]) + (R_MAT[0][1] * point[1]),
                 (R_MAT[1][0] * point[0]) + (R_MAT[1][1] * point[1])};
     }
@@ -298,7 +330,7 @@ public class TetrominoWorld extends World {
      *
      * @param list ArrayList<ImageView> of length 4
      */
-    public void buildTetromino(ArrayList<ImageView> list, int r) {
+    private void buildTetromino(ArrayList<ImageView> list, int r) {
 
         if (list.size() != 4) return;
 
@@ -353,29 +385,8 @@ public class TetrominoWorld extends World {
         }
     }
 
-    public void setLeft(KeyCode k) {
-        this.LEFT = k;
-    }
-    public void setRight(KeyCode k) {
-        this.RIGHT = k;
-    }
-    public void setDown(KeyCode k) {
-        this.DOWN = k;
-    }
-    public void setRotate(KeyCode k) {
-        this.ROTATE = k;
-    }
-    public void setDone(KeyCode k) {
-        this.DONE = k;
-    }
-    public KeyCode getLeft() { return this.LEFT; }
-    public KeyCode getRight() { return this.RIGHT; }
-    public KeyCode getDown() { return this.DOWN; }
-    public KeyCode getRotate() { return this.ROTATE; }
-    public KeyCode getDone() { return this.DONE; }
-
     /** Fills the board with blank Blocks. */
-    public void initialise() {
+    private void initialise() {
         BLANK_GRID = new ImageView[HEIGHT][WIDTH];
 
         for (int row = 0; row < HEIGHT; ++row) {
@@ -388,7 +399,7 @@ public class TetrominoWorld extends World {
         this.fallingBlocks = new ArrayList<ImageView>();
     }
 
-    public boolean checkCollisions() {
+    private boolean checkCollisions(int x, int y) {
         boolean flag = false;
         for (ImageView view : fallingBlocks) {
             // Check if next move will intersect with bottom stack
@@ -396,7 +407,8 @@ public class TetrominoWorld extends World {
                 if (!hasTouchedBottom &&
                         !fallingBlocks.contains(n) &&
                         !((ImageView)n).getImage().equals(BLANK_SQUARE) &&
-                        getRowIndex(n) - 1 == getRowIndex(view) &&
+                        (getRowIndex(n) + y == getRowIndex(view) ||
+                        getColumnIndex(n) + x == getColumnIndex(view)) &&
                         getColumnIndex(n) == getColumnIndex(view)) {
 
                     // If so, set flag
@@ -407,8 +419,8 @@ public class TetrominoWorld extends World {
         return flag;
     }
 
-    // Mode-specific commands
-    public GridPane getNextTetromino() {
+    // Enables next block
+    private GridPane getNextTetromino() {
         GridPane upcoming = new GridPane();
 
         switch (nextTetromino) {
@@ -418,35 +430,35 @@ public class TetrominoWorld extends World {
                 upcoming.add(nextBlocks.get(1), 6, 1);
                 upcoming.add(nextBlocks.get(2), 6, 2);
                 upcoming.add(nextBlocks.get(3), 7, 2);
-                upcoming.break;
+                break;
             case 1:
                 // Square shape.
                 upcoming.add(nextBlocks.get(0), 6, 0);
                 upcoming.add(nextBlocks.get(1), 7, 0);
                 upcoming.add(nextBlocks.get(2), 6, 1);
                 upcoming.add(nextBlocks.get(3), 7, 1);
-                upcoming.break;
+                break;
             case 2:
                 // T-shape.
                 upcoming.add(nextBlocks.get(0), 6, 0);
                 upcoming.add(nextBlocks.get(1), 5, 0);
                 upcoming.add(nextBlocks.get(2), 7, 0);
                 upcoming.add(nextBlocks.get(3), 6, 1);
-                upcoming.break;
+                break;
             case 3:
                 // Straight shape.
                 upcoming.add(nextBlocks.get(0), 5, 0);
                 upcoming.add(nextBlocks.get(1), 6, 0);
                 upcoming.add(nextBlocks.get(2), 7, 0);
                 upcoming.add(nextBlocks.get(3), 8, 0);
-                upcoming.break;
+                break;
             case 4:
                 // Z-shape
                 upcoming.add(nextBlocks.get(0), 5, 0);
                 upcoming.add(nextBlocks.get(1), 6, 0);
                 upcoming.add(nextBlocks.get(2), 6, 1);
                 upcoming.add(nextBlocks.get(3), 7, 1);
-                upcoming.break;
+                break;
             case 5:
                 // Inverse Z-shape.
                 upcoming.add(nextBlocks.get(0), 5, 1);
@@ -458,4 +470,10 @@ public class TetrominoWorld extends World {
 
         return upcoming;
     }
+
+    // Handle multiplayer
+    private void mpAct() {
+        if (!MULTIPLAYER) return;
+    }
+
 }

@@ -24,7 +24,7 @@ public abstract class World extends javafx.scene.layout.GridPane {
     }
 
     // Methods
-    public abstract void act(long now);
+    protected abstract void act(long now);
 
     public void start() {
         t.start();
