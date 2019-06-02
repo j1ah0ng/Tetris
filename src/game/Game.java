@@ -12,6 +12,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
@@ -36,11 +37,23 @@ public class Game extends Application {
 		
 		//MediaPlayer mp = new MediaPlayer(m); //import needs verifying
 		
+		TetrominoWorld world = new TetrominoWorld((long)(1e9));
+//		world.start();
+//
+//		stage.setScene(new Scene(world));
+//		stage.addEventHandler(KeyEvent.KEY_RELEASED, e -> world.addKey(e.getCode()));
+//		stage.setTitle("Tetris");
+//		stage.setResizable(false);
+//		stage.show();
+//
+//		world.requestFocus();
+		
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
 
 		int w = 800;
 		int h = 640;
+
 
 		Image backLogo = new Image("file:assets/Backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
@@ -258,12 +271,17 @@ public class Game extends Application {
 		riv.setFitHeight(h);
 		riv.setFitWidth(w);
 
-		regPane.getChildren().addAll(riv);
+		regPane.getChildren().addAll(riv, world);
 
 		mreg.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				world.start();
 				stage.setScene(regularScene);
+				stage.addEventHandler(KeyEvent.KEY_RELEASED, e -> world.addKey(e.getCode()));
+				
+				world.requestFocus();
+				
 			}
 		});
 
@@ -402,6 +420,7 @@ public class Game extends Application {
 				s.setCursor(new ImageCursor(im));
 			}
 		});
+		
 
 		stage.setScene(s);
 		stage.show();
