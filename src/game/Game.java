@@ -212,7 +212,7 @@ public class Game extends Application {
 		StackPane root = new StackPane();
 		Scene s = new Scene(root, w, h, Color.BLACK);
 
-		Image bg = new Image("file:assets/Backgrounds/tetrisstartmenu.png");
+		Image bg = new Image("file:assets/Backgrounds/tetrisstartmenu2.png");
 		ImageView iv1 = new ImageView();
 
 		iv1.setFitWidth(w);
@@ -221,29 +221,25 @@ public class Game extends Application {
 		root.getChildren().add(iv1);
 
 		ImageView iv2 = new ImageView();
-		HBox hb1 = new HBox();
 		Image modes = new Image("file:assets/Backgrounds/modes.png");
 		Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
 		// setfitwidth and height?
 		iv2.setImage(modes);
-		hb1.getChildren().add(iv2);
+		iv2.setTranslateY(0);
 
 		ImageView iv3 = new ImageView();
 		// HBox hb2 = new HBox();
 		Image music = new Image("file:assets/Backgrounds/music.png");
 		Image musicfilled = new Image("file:assets/Backgrounds/musicfilled.png");
 		iv3.setImage(music);
-		hb1.getChildren().add(iv3);
+		iv3.setTranslateY(0.17578125*h);
 
 		ImageView iv4 = new ImageView();
 		// HBox hb2 = new HBox();
 		Image binds = new Image("file:assets/Backgrounds/binds.png");
 		Image bindsfilled = new Image("file:assets/Backgrounds/bindsfilled.png");
 		iv4.setImage(binds);
-		hb1.getChildren().add(iv4);
-
-		hb1.setPadding(new Insets(100, 100, 400, 100));
-		hb1.setSpacing(75);
+		iv4.setTranslateY(0.3515625*h);
 
 		// regular mode
 		StackPane regPane = new StackPane();
@@ -390,7 +386,7 @@ public class Game extends Application {
 			}
 		});
 
-		root.getChildren().addAll(hb1);
+		root.getChildren().addAll(iv2, iv3, iv4);
 
 		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
