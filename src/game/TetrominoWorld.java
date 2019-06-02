@@ -156,7 +156,7 @@ public class TetrominoWorld extends World {
     protected void act(long now) {
 
         // Fix overflows
-        if (Long.MAX_VALUE - now + 1000 > delay) lastRun = Long.MIN_VALUE;
+        // if (Long.MAX_VALUE - now + 1000 > delay) lastRun = Long.MIN_VALUE;
 
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
@@ -207,6 +207,7 @@ public class TetrominoWorld extends World {
         if (!hasTouchedBottom) {
 
             // Rotate fallingBlocks
+            // todo: rotations may break collision logic
             if (hasKey(rotate)) {
 
                 // Find origin as the average coordinates of all falling blocks
@@ -292,7 +293,7 @@ public class TetrominoWorld extends World {
                     for (ImageView i : fallingBlocks) {
                         setRowIndex(i, getRowIndex(i) + 1);
                     }
-                    hasTouchedBottom = checkCollisions(0, -1);
+                    hasTouchedBottom = checkCollisions(0, 1);
                 }
                 removeKey(this.done);
             }
@@ -430,15 +431,15 @@ public class TetrominoWorld extends World {
                 if (!hasTouchedBottom &&
                         !fallingBlocks.contains(n) &&
                         !((ImageView)n).getImage().equals(BLANK_SQUARE) &&
-                        (getRowIndex(n) + y == getRowIndex(view) ||
-                        getColumnIndex(n) + x == getColumnIndex(view)) &&
-                        getColumnIndex(n) == getColumnIndex(view)) {
+                        getRowIndex(n) == getRowIndex(view) + y &&
+                        getColumnIndex(n)  == getColumnIndex(view) + x) {
 
                     // If so, set flag
                     flag = true;
                 } else if (getRowIndex(view) + 1 >= HEIGHT) flag = true;
             }
         }
+        hasTouchedBottom = flag;
         return flag;
     }
 
@@ -448,7 +449,7 @@ public class TetrominoWorld extends World {
                 // Move blocks down
                 setRowIndex(view, getRowIndex(view) + 1);
             }
-            hasTouchedBottom = checkCollisions(0, -1);
+            hasTouchedBottom = checkCollisions(0, 1);
         }
         spawnNew = hasTouchedBottom;
     }
