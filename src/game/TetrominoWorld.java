@@ -159,14 +159,14 @@ public class TetrominoWorld extends World {
     @Override
     protected void act(long now) {
 
+        // Stop acting if game is over
         if (gameOver) return;
-
-        // Fix overflows
-        // if (Long.MAX_VALUE - now + 1000 > delay) lastRun = Long.MIN_VALUE;
 
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
-            System.out.println("Time: " + System.currentTimeMillis());
+
+            // Debug statement
+            // System.out.println("Time: " + System.currentTimeMillis());
 
             delay += (delayAccel) * (now - lastRun);
 

@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -447,13 +448,22 @@ public class Game extends Application {
 		riv.setImage(regbg);
 		riv.setFitHeight(h);
 		riv.setFitWidth(w);
-
 		regPane.getChildren().addAll(riv);
 
 		mreg.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+
+				// Create a world of regular gamemode and add it
+				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+						TetrominoWorld.GameMode.GM_NORMAL);
+				regPane.getChildren().addAll(regularWorld);
+				regPane.setAlignment(regularWorld, Pos.CENTER);
+				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
+
 				stage.setScene(regularScene);
+				regPane.requestFocus();
+				regularWorld.start();
 			}
 		});
 
@@ -472,7 +482,30 @@ public class Game extends Application {
 		mmultiplayer.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+
+				// Create two multiplayer worlds
+				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
+						TetrominoWorld.GameMode.GM_MULTIPLAYER);
+				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
+						TetrominoWorld.GameMode.GM_MULTIPLAYER);
+				mpWorldA.setOpponent(mpWorldB);
+				mpWorldB.setOpponent(mpWorldA);
+
+				// Add them, setting alignment reasonably
+				mPane.getChildren().addAll(mpWorldA, mpWorldB);
+				mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
+				mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
+
+				// Provision an event handler to pass key-events to worlds
+				mPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> {
+					mpWorldA.addKey(e.getCode());
+					mpWorldB.addKey(e.getCode());
+				});
+
 				stage.setScene(multiplayerScene);
+				mPane.requestFocus();
+				mpWorldA.start();
+				mpWorldB.start();
 			}
 		});
 
@@ -493,7 +526,22 @@ public class Game extends Application {
 		mblitz.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+
+				// Create a blitz world
+				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+						TetrominoWorld.GameMode.GM_BLITZ);
+
+				// Add them and set alignment
+				blitzPane.getChildren().addAll(blitzWorld);
+				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
+
+				// Provision event handlers
+				blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
+						e -> blitzWorld.addKey(e.getCode()));
+
 				stage.setScene(blitzScene);
+				blitzPane.requestFocus();
+				blitzWorld.start();
 			}
 		});
 
