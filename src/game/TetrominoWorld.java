@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javafx.animation.AnimationTimer;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,14 +17,20 @@ public class TetrominoWorld extends World {
 
     /* Begin static types */
 
+    // Gamemode enum
+    public static enum GameMode {
+        GM_MULTIPLAYER, GM_BLITZ, GM_NORMAL
+    }
+
     // Blank block image
-    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/ux0.png");
+    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/32ux0.png");
 
     // Blank grid
     public static ImageView[][] BLANK_GRID;
 
     // Array of all possible Block types
-    public static final Block[] BLOCKS = {Block.BLOCK_BASE};
+    public static final Block[] BLOCKS = {Block.DARK_RED, Block.GREEN, Block.ORANGE, Block.PURPLE,
+        Block.RED, Block.TURQUOISE, Block.YELLOW};
 
     // Rotation matrix
     public static final int[][] R_MAT =
@@ -38,50 +45,124 @@ public class TetrominoWorld extends World {
     /* End static types */
 
     // Keycode bindings
-    public KeyCode ROTATE = KeyCode.R;
-    public KeyCode DOWN = KeyCode.DOWN;
-    public KeyCode LEFT = KeyCode.LEFT;
-    public KeyCode RIGHT = KeyCode.RIGHT;
-    public KeyCode DONE = KeyCode.SPACE;
+    private KeyCode rotate = KeyCode.R;
+    private KeyCode down = KeyCode.DOWN;
+    private KeyCode left = KeyCode.LEFT;
+    private KeyCode right = KeyCode.RIGHT;
+    private KeyCode done = KeyCode.SPACE;
+
+    // Gamemode flag
+    private final boolean MULTIPLAYER;
+    private final boolean BLITZ;
+
+    // Data relevant only to blitz mode
+    private static final long BLITZ_LENGTH_NS = (long)120e9;
+    // Data relevant only to multiplayer mode
+    private static final long FRENZY_LENGTH_NS = (long)3e9;
+    private static final int FRENZY_SPEED_SCALAR = 3;
+    private long frenzyStartTimeNs;
+    private int rowsEliminated;
+    private TetrominoWorld opponent;
+    private KeyCode mpFrenzy = KeyCode.F;      // Placeholder keybinds
+    private KeyCode mpDrop = KeyCode.D;        // until we implement better
 
     // Attributes
     private long delay;             // Delay between display updates
     private long delayAccel;        // d(delay)/dt in seconds per second
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
-    private boolean hasTouchedBottom;
-    // Flag variable for having touched the bottom stack
+    private boolean gameOver;
+    private Game game;
 
-    ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
-    ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
-    int nextTetromino;              // int representing ID of the next falling tetromino
+    private ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
+    private ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
+    private int nextTetromino;              // int representing ID of the next falling tetromino
 
     // Constructors
-    public TetrominoWorld(long delay) {
+    public TetrominoWorld(Game game, long delay) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
-        hasTouchedBottom = false;
         this.delay = delay;
         this.delayAccel = 0;
+        MULTIPLAYER = false;
+        BLITZ = false;
+        rowsEliminated = 0;
+        gameOver = false;
 
-        initialise();
+        initialize();
     }
 
-    public TetrominoWorld(long delay, long delayAccel) {
+    public TetrominoWorld(Game game, long delay, long delayAccel) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
-        hasTouchedBottom = false;
         this.delay = delay;
         this.delayAccel = delayAccel;
+        MULTIPLAYER = false;
+        BLITZ = false;
+        rowsEliminated = 0;
+        gameOver = false;
 
-        initialise();
+        initialize();
     }
 
-    // Methods
+    public TetrominoWorld(Game game, long delay, long delayAccel, GameMode mode) {
+        super();
+        this.game = game;
+        lastRun = 0;
+        spawnNew = true;
+        this.delay = delay;
+        this.delayAccel = delayAccel;
+        rowsEliminated = 0;
+        gameOver = false;
+
+        switch (mode) {
+            case GM_BLITZ:
+                BLITZ = true;
+                MULTIPLAYER = false;
+                break;
+            case GM_MULTIPLAYER:
+                BLITZ = false;
+                MULTIPLAYER = true;
+                break;
+            default:
+                BLITZ = false;
+                MULTIPLAYER = false;
+                break;
+        }
+
+        initialize();
+    }
+
+    // Public getter and setter functions
+    public void setOpponent(TetrominoWorld opponent) { this.opponent = opponent; }
+
+    public void setLeft(KeyCode k) { this.left = k; }
+    public void setRight(KeyCode k) { this.right = k; }
+    public void setDown(KeyCode k) { this.down = k; }
+    public void setRot(KeyCode k) { this.rotate = k; }
+    public void setDone(KeyCode k) { this.done = k; }
+    public void setMPFrenzy(KeyCode k) { this.mpFrenzy = k; }
+    public void setMPDrop(KeyCode k) { this.mpDrop = k; }
+    public KeyCode getLeft() { return this.left; }
+    public KeyCode getRight() { return this.right; }
+    public KeyCode getDown() { return this.down; }
+    public KeyCode getRot() { return this.rotate; }
+    public KeyCode getDone() { return this.done; }
+    public KeyCode getMPFrenzy() { return this.mpFrenzy; }
+    public KeyCode getMPDrop() { return this.mpDrop; }
+
+    // Main loop function
     @Override
-    public void act(long now) {
+    protected void act(long now) {
+
+        if (gameOver) return;
+
+        // Fix overflows
+        // if (Long.MAX_VALUE - now + 1000 > delay) lastRun = Long.MIN_VALUE;
 
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
@@ -92,18 +173,8 @@ public class TetrominoWorld extends World {
             // Block movements and check collisions
             if (!spawnNew) {
                 // Iterate over falling blocks
-
-                if (!hasTouchedBottom) {
-                    for (ImageView view : fallingBlocks) {
-                        // Move blocks down
-                        setRowIndex(view, getRowIndex(view) + 1);
-                    }
-                    hasTouchedBottom = checkCollisions();
-                }
-
-                spawnNew = hasTouchedBottom;
+                moveDown();
             } else {
-
 
                 if (fallingBlocks.size() == 0) {        // Deal with first run scenario
                     // Randomise block appearance
@@ -116,7 +187,7 @@ public class TetrominoWorld extends World {
                     // Arrange the blocks in the ArrayList accordingly
                     buildTetromino(fallingBlocks, (int) (6 * Math.random()));
 
-                    spawnNew = hasTouchedBottom = false;
+                    spawnNew = false;
 
                     // Create new tetromino for nextBlocks
                     blockType = (int) (Math.random() * BLOCKS.length);
@@ -130,23 +201,7 @@ public class TetrominoWorld extends World {
                 }
 
                 else {
-                    // Make the currently falling block the next one
-                    fallingBlocks = nextBlocks;
-
-                    // Arrange the blocks in the ArrayList accordingly
-                    buildTetromino(fallingBlocks, nextTetromino);
-
-                    // Create new tetromino for nextBlocks
-                    int blockType = (int) (Math.random() * BLOCKS.length);
-                    nextBlocks = new ArrayList<ImageView>();
-                    for (int i = 0; i < 4; ++i) {
-                        nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
-                    }
-
-                    // Deal with next case
-                    nextTetromino = (int) (Math.random() * 6);
-
-                    spawnNew = hasTouchedBottom = false;
+                    handleSpawn();
                 }
             }
 
@@ -155,10 +210,11 @@ public class TetrominoWorld extends World {
         }
 
         // Move falling blocks
-        if (!hasTouchedBottom) {
+        if (!checkCollisions(0, 1)) {
 
             // Rotate fallingBlocks
-            if (hasKey(ROTATE)) {
+            // todo: rotations may break collision logic
+            if (hasKey(rotate)) {
 
                 // Find origin as the average coordinates of all falling blocks
                 int xZero = 0;
@@ -205,49 +261,42 @@ public class TetrominoWorld extends World {
                     setRowIndex(v, points[i][1] + yOffset);
                 }
 
-                removeKey(ROTATE);
+                removeKey(rotate);
             }
 
             boolean flag = false;
-            if (hasKey(this.DOWN)) {
+            if (hasKey(this.down)) {
+                moveDown();
+                removeKey(this.down);
+            } else if (hasKey(this.left)) {
                 // Check bounds
-                if (!hasTouchedBottom) {
+                if(!checkCollisions(-1, 0)) {
                     for (ImageView i : fallingBlocks) {
-                        setRowIndex(i, getRowIndex(i) + 1);
+                        if (getColumnIndex(i) - 1 < 0) flag = true;
                     }
-                    hasTouchedBottom = checkCollisions();
+                    if (!flag) {
+                        for (ImageView i : fallingBlocks) {
+                            setColumnIndex(i, getColumnIndex(i) - 1);
+                        }
+                    }
                 }
-                removeKey(this.DOWN);
-            } else if (hasKey(this.LEFT)) {
+                removeKey(this.left);
+            } else if (hasKey(this.right)) {
                 // Check bounds
-                for (ImageView i : fallingBlocks) {
-                    if (getColumnIndex(i) - 1 < 0) flag = true;
-                }
-                if (!flag) {
+                if(!checkCollisions(+1, 0)) {
                     for (ImageView i : fallingBlocks) {
-                        setColumnIndex(i, getColumnIndex(i) - 1);
+                        if (getColumnIndex(i) + 1 >= WIDTH) flag = true;
+                    }
+                    if (!flag) {
+                        for (ImageView i : fallingBlocks) {
+                            setColumnIndex(i, getColumnIndex(i) + 1);
+                        }
                     }
                 }
-                removeKey(this.LEFT);
-            } else if (hasKey(this.RIGHT)) {
-                // Check bounds
-                for (ImageView i : fallingBlocks) {
-                    if (getColumnIndex(i) + 1 >= WIDTH) flag = true;
-                }
-                if (!flag) {
-                    for (ImageView i : fallingBlocks) {
-                        setColumnIndex(i, getColumnIndex(i) + 1);
-                    }
-                }
-                removeKey(this.RIGHT);
-            } else if (hasKey(this.DONE)) {
-                while (!hasTouchedBottom) {
-                    for (ImageView i : fallingBlocks) {
-                        setRowIndex(i, getRowIndex(i) + 1);
-                    }
-                    hasTouchedBottom = checkCollisions();
-                }
-                removeKey(this.DONE);
+                removeKey(this.right);
+            } else if (hasKey(this.done)) {
+                drop();
+                removeKey(this.done);
             }
         } else {
 
@@ -266,6 +315,7 @@ public class TetrominoWorld extends World {
             for (int i = HEIGHT-1; i >= 0; --i) {
                 // Check each row.
                 if (rows[i] >= WIDTH) {
+                    ++rowsEliminated;
                     // Move everything under it down and everything in it away.
                     Iterator<Node> iter = getChildren().iterator();
                     while (iter.hasNext()) {
@@ -282,14 +332,21 @@ public class TetrominoWorld extends World {
             start();
 
         }
+
+        // Deal with multiplayer
+        if (MULTIPLAYER && opponent != null) mpAct();
+
+        // Deal with blitz
+        if (msElapsed() > BLITZ_LENGTH_NS) endGame();
     }
 
+    // Private helper functions
     /** Rotates a point clockwise by 90 degrees represented as int[] {x, y}.
      *
      * @param point A point to be rotated represented as int[] {x, y}
      * @return A rotated point represented as int[] {x, y}
      */
-    public int[] rotatePoint(int[] point) {
+    private int[] rotatePoint(int[] point) {
         return new int[] {(R_MAT[0][0] * point[0]) + (R_MAT[0][1] * point[1]),
                 (R_MAT[1][0] * point[0]) + (R_MAT[1][1] * point[1])};
     }
@@ -298,7 +355,7 @@ public class TetrominoWorld extends World {
      *
      * @param list ArrayList<ImageView> of length 4
      */
-    public void buildTetromino(ArrayList<ImageView> list, int r) {
+    private void buildTetromino(ArrayList<ImageView> list, int r) {
 
         if (list.size() != 4) return;
 
@@ -353,30 +410,8 @@ public class TetrominoWorld extends World {
         }
     }
 
-    public void setLeft(KeyCode k) {
-        this.LEFT = k;
-    }
-    public void setRight(KeyCode k) {
-        this.RIGHT = k;
-    }
-    public void setDown(KeyCode k) {
-        this.DOWN = k;
-    }
-    public void setRotate(KeyCode k) {
-        this.ROTATE = k;
-    }
-    public void setDone(KeyCode k) {
-        this.DONE = k;
-    }
-    public KeyCode getLeft() { return this.LEFT; }
-    public KeyCode getRight() { return this.RIGHT; }
-    public KeyCode getDown() { return this.DOWN; }
-    @Override
-    public KeyCode getRotate() { return this.ROTATE; }
-    public KeyCode getDone() { return this.DONE; }
-
     /** Fills the board with blank Blocks. */
-    public void initialise() {
+    private void initialize() {
         BLANK_GRID = new ImageView[HEIGHT][WIDTH];
 
         for (int row = 0; row < HEIGHT; ++row) {
@@ -389,27 +424,92 @@ public class TetrominoWorld extends World {
         this.fallingBlocks = new ArrayList<ImageView>();
     }
 
-    public boolean checkCollisions() {
+    private boolean checkCollisions(int x, int y) {
         boolean flag = false;
         for (ImageView view : fallingBlocks) {
             // Check if next move will intersect with bottom stack
+            if (getRowIndex(view) + 1 >= HEIGHT) {
+                flag = true;
+                break;
+            }
+
             for (Node n : getChildren()) {
-                if (!hasTouchedBottom &&
-                        !fallingBlocks.contains(n) &&
+                if (!fallingBlocks.contains(n) &&
                         !((ImageView)n).getImage().equals(BLANK_SQUARE) &&
-                        getRowIndex(n) - 1 == getRowIndex(view) &&
-                        getColumnIndex(n) == getColumnIndex(view)) {
+                        getRowIndex(n) == getRowIndex(view) + y &&
+                        getColumnIndex(n)  == getColumnIndex(view) + x) {
 
                     // If so, set flag
                     flag = true;
-                } else if (getRowIndex(view) + 1 >= HEIGHT) flag = true;
+                }
             }
         }
         return flag;
     }
 
-    // Mode-specific commands
-    public GridPane getNextTetromino() {
+    private void moveDown() {
+
+        if (!checkCollisions(0, 1)) {
+            for (ImageView view : fallingBlocks) {
+                // Move blocks down
+                setRowIndex(view, getRowIndex(view) + 1);
+            }
+        }
+        spawnNew = checkCollisions(0, 1);
+    }
+
+    private void endGame() {
+        if (game != null) game.endGame();
+        stop();
+        spawnNew = false;
+    }
+
+    private void handleSpawn() {
+        // Make the currently falling block the next one
+        fallingBlocks = nextBlocks;
+
+        // Arrange the blocks in the ArrayList accordingly
+        buildTetromino(fallingBlocks, nextTetromino);
+
+        // Check if the game has ended
+        for (ImageView i : fallingBlocks) {
+            Iterator it = getChildren().iterator();
+            int c = getColumnIndex(i);
+            int r = getRowIndex(i);
+            while (it.hasNext()) {
+                Node n = (Node) it.next();
+                if (!fallingBlocks.contains(n) &&
+                        !((ImageView) n).getImage().equals(BLANK_SQUARE) &&
+                        getColumnIndex(n) == c &&
+                        getRowIndex(n) == r) {
+                    gameOver = true;
+                }
+            }
+        }
+
+        if (gameOver) {
+            for (ImageView i : fallingBlocks) {
+                getChildren().remove(i);
+            }
+            endGame();
+            return;
+        }
+
+        // Create new tetromino for nextBlocks
+        int blockType = (int) (Math.random() * BLOCKS.length);
+        nextBlocks = new ArrayList<ImageView>();
+        for (int i = 0; i < 4; ++i) {
+            nextBlocks.add(new ImageView(BLOCKS[blockType].getImage()));
+        }
+
+        // Deal with next case
+        nextTetromino = (int) (Math.random() * 6);
+
+        spawnNew = false;
+    }
+
+    // Enables next block
+    private GridPane getNextTetromino() {
         GridPane upcoming = new GridPane();
 
         switch (nextTetromino) {
@@ -419,35 +519,35 @@ public class TetrominoWorld extends World {
                 upcoming.add(nextBlocks.get(1), 6, 1);
                 upcoming.add(nextBlocks.get(2), 6, 2);
                 upcoming.add(nextBlocks.get(3), 7, 2);
-                upcoming.break;
+                break;
             case 1:
                 // Square shape.
                 upcoming.add(nextBlocks.get(0), 6, 0);
                 upcoming.add(nextBlocks.get(1), 7, 0);
                 upcoming.add(nextBlocks.get(2), 6, 1);
                 upcoming.add(nextBlocks.get(3), 7, 1);
-                upcoming.break;
+                break;
             case 2:
                 // T-shape.
                 upcoming.add(nextBlocks.get(0), 6, 0);
                 upcoming.add(nextBlocks.get(1), 5, 0);
                 upcoming.add(nextBlocks.get(2), 7, 0);
                 upcoming.add(nextBlocks.get(3), 6, 1);
-                upcoming.break;
+                break;
             case 3:
                 // Straight shape.
                 upcoming.add(nextBlocks.get(0), 5, 0);
                 upcoming.add(nextBlocks.get(1), 6, 0);
                 upcoming.add(nextBlocks.get(2), 7, 0);
                 upcoming.add(nextBlocks.get(3), 8, 0);
-                upcoming.break;
+                break;
             case 4:
                 // Z-shape
                 upcoming.add(nextBlocks.get(0), 5, 0);
                 upcoming.add(nextBlocks.get(1), 6, 0);
                 upcoming.add(nextBlocks.get(2), 6, 1);
                 upcoming.add(nextBlocks.get(3), 7, 1);
-                upcoming.break;
+                break;
             case 5:
                 // Inverse Z-shape.
                 upcoming.add(nextBlocks.get(0), 5, 1);
@@ -458,5 +558,51 @@ public class TetrominoWorld extends World {
         }
 
         return upcoming;
+    }
+
+    // Handle multiplayer
+    public int getRowsEliminated() { return rowsEliminated; }
+    private void mpAct() {
+        if (rowsEliminated > 0) {
+            if (hasKey(this.mpDrop)) {
+                opponent.drop();
+                --rowsEliminated;
+            }
+            else if (hasKey(this.mpFrenzy)) {
+                opponent.beginFrenzy();
+                --rowsEliminated;
+            }
+        }
+    }
+
+    public void drop() {
+        while (!checkCollisions(0, 1)) {
+            moveDown();
+        }
+    }
+
+    public void beginFrenzy() {
+        // Stop the world timer
+        stop();
+
+        // Handle the frenzy for five seconds
+        AnimationTimer frenzyTimer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                handleFrenzy(l, this);
+            }
+        };
+
+        delay /= FRENZY_SPEED_SCALAR;
+        frenzyStartTimeNs = (long) (System.currentTimeMillis() * 1e6);
+        frenzyTimer.start();
+    }
+
+    private void handleFrenzy(long l, AnimationTimer timer) {
+        if (frenzyStartTimeNs + FRENZY_LENGTH_NS <= l) {
+            delay *= FRENZY_SPEED_SCALAR;
+            timer.stop();
+        }
+        act(l);
     }
 }

@@ -14,8 +14,8 @@ public abstract class World extends javafx.scene.layout.GridPane {
     /** Set of all keys awaiting a response. Once a key is acknowledged, it
      * should be removed from the list. */
     protected HashSet<KeyCode> keys;
-    protected AnimationTimer t;
     protected long startTimeMs;   // world start time in ms
+    private AnimationTimer t;
 
     // Constructor
     public World() {
@@ -24,7 +24,7 @@ public abstract class World extends javafx.scene.layout.GridPane {
     }
 
     // Methods
-    public abstract void act(long now);
+    protected abstract void act(long now);
 
     public void start() {
         t.start();
@@ -47,8 +47,12 @@ public abstract class World extends javafx.scene.layout.GridPane {
 
     public void addKey(KeyCode key) { keys.add(key); }
     public void removeKey(KeyCode key) { keys.remove(key); }
+    public void removeAllKeys() { keys.removeAll(); }
     public boolean hasKey(KeyCode key) { return keys.contains(key); }
     public int secondsElapsed() {
         return (int) ((System.currentTimeMillis() - startTimeMs) / 1000);
+    }
+    public long msElapsed() {
+        return System.currentTimeMillis() - startTimeMs;
     }
 }

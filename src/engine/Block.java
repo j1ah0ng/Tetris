@@ -8,21 +8,25 @@ import javafx.scene.image.Image;
  */
 public enum Block {
 
-    BLOCK_BASE ("block_base");
+    DARK_RED("32darkredblock.png"),
+    GREEN("32greenblock.png"),
+    ORANGE("32orangeblock.png"),
+    PURPLE("32purpleblock.png"),
+    RED("32redblock.png"),
+    TURQUOISE("32turquoiseblock.png"),
+    YELLOW("32yellowblock.png") ;
 
     String filename;
     Image image;
 
     Block(String filename) {
         this.filename = filename;
-        this.image = new Image("file:assets/blocks/" + filename + ".png");
+        this.image = new Image("file:assets/blocks/" + filename);
     }
 
     public String getFilename() {
         return filename;
     }
 
-    public Image getImage() {
-        return image;
-    }
+    public Image getImage() { return image; }
 }
