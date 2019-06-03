@@ -47,7 +47,6 @@ public abstract class World extends javafx.scene.layout.GridPane {
 
     public void addKey(KeyCode key) { keys.add(key); }
     public void removeKey(KeyCode key) { keys.remove(key); }
-    public void removeAllKeys() { keys.removeAll(); }
     public boolean hasKey(KeyCode key) { return keys.contains(key); }
     public int secondsElapsed() {
         return (int) ((System.currentTimeMillis() - startTimeMs) / 1000);

@@ -31,9 +31,9 @@ public class Game extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Media media = new Media("file:///C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
-	    MediaPlayer mp = new MediaPlayer(media); 
-	    mp.play();
+		Media media = new Media("file:assets/sound/tetris-classic.mp3");
+	    // MediaPlayer mp = new MediaPlayer(media);
+	    // mp.play();
 	       
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
@@ -57,7 +57,7 @@ public class Game extends Application {
 		int w = 800;
 		int h = 640;
 
-		Image backLogo = new Image("file:assets/Backgrounds/backlogoTransparent.png");
+		Image backLogo = new Image("file:assets/backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
 		miv2.setImage(backLogo);
 		miv2.setFitHeight(50);
@@ -90,7 +90,7 @@ public class Game extends Application {
 		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				bindScene.setCursor(new ImageCursor(im));
 			}
 		});
@@ -108,12 +108,12 @@ public class Game extends Application {
 
 		bindsRoot.getChildren().addAll(vbox1, miv3);
 		
-		Image n1= new Image("file:assets/Backgrounds/1.png");
-		Image n1filled = new Image("file:assets/Backgrounds/1filled.png");
+		Image n1= new Image("file:assets/backgrounds/1.png");
+		Image n1filled = new Image("file:assets/backgrounds/1filled.png");
 		ImageView num1 = new ImageView(n1filled);
 		
-		Image n2 = new Image("file:assets/Backgrounds/2.png");
-		Image n2filled = new Image("file:assets/Backgrounds/2filled.png");
+		Image n2 = new Image("file:assets/backgrounds/2.png");
+		Image n2filled = new Image("file:assets/backgrounds/2filled.png");
 		ImageView num2 = new ImageView(n2);
 		num2.setFitWidth(45);
 
@@ -168,8 +168,8 @@ public class Game extends Application {
 		
 		bindsRoot.getChildren().addAll(down, right, left, rotate, drop, mpfrenzy, mpdrop);
 
-		Image change = new Image("file:assets/Backgrounds/change.png");
-		Image changefilled = new Image("file:assets/Backgrounds/changefilled.png");
+		Image change = new Image("file:assets/backgrounds/change.png");
+		Image changefilled = new Image("file:assets/backgrounds/changefilled.png");
 		
 		ImageView ivchange1 = new ImageView(change);
 		ImageView ivchange2 = new ImageView(change);
@@ -305,6 +305,7 @@ public class Game extends Application {
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
+		/*
 		slider.setValue(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
@@ -312,6 +313,8 @@ public class Game extends Application {
 				mp.setVolume(slider.getValue());
 			}
 		});
+		
+		 */
 		
 		vbox2.getChildren().addAll(musicTitle, slider);
 
@@ -326,12 +329,12 @@ public class Game extends Application {
 		menuRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				menuScene.setCursor(new ImageCursor(im));
 			}
 		});
 
-		Image menubg = new Image("file:assets/Backgrounds/menumodebackground.jpg");
+		Image menubg = new Image("file:assets/backgrounds/menumodebackground.jpg");
 		ImageView miv1 = new ImageView();
 
 		miv1.setFitHeight(h);
@@ -347,8 +350,8 @@ public class Game extends Application {
 
 		modeTitle.getChildren().add(title);
 
-		Image regular = new Image("file:assets/Backgrounds/regular.png");
-		Image regularfilled = new Image("file:assets/Backgrounds/regularfilled.png");
+		Image regular = new Image("file:assets/backgrounds/regular.png");
+		Image regularfilled = new Image("file:assets/backgrounds/regularfilled.png");
 		ImageView mreg = new ImageView();
 		mreg.setImage(regular);
 		mreg.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -364,8 +367,8 @@ public class Game extends Application {
 			}
 		});
 
-		Image blitz = new Image("file:assets/Backgrounds/blitz.png");
-		Image blitzfilled = new Image("file:assets/Backgrounds/blitzfilled.png");
+		Image blitz = new Image("file:assets/backgrounds/blitz.png");
+		Image blitzfilled = new Image("file:assets/backgrounds/blitzfilled.png");
 		ImageView mblitz = new ImageView();
 		mblitz.setImage(blitz);
 		mblitz.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -381,8 +384,8 @@ public class Game extends Application {
 			}
 		});
 
-		Image multiplayer = new Image("file:assets/Backgrounds/multiplayer.png");
-		Image multiplayerfilled = new Image("file:assets/Backgrounds/multiplayerfilled.png");
+		Image multiplayer = new Image("file:assets/backgrounds/multiplayer.png");
+		Image multiplayerfilled = new Image("file:assets/backgrounds/multiplayerfilled.png");
 		ImageView mmultiplayer = new ImageView();
 		mmultiplayer.setImage(multiplayer);
 		mmultiplayer.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -409,7 +412,7 @@ public class Game extends Application {
 		StackPane root = new StackPane();
 		Scene s = new Scene(root, w, h, Color.BLACK);
 
-		Image bg = new Image("file:assets/Backgrounds/tetrisstartmenu2.png");
+		Image bg = new Image("file:assets/backgrounds/tetrisstartmenu2.png");
 		ImageView iv1 = new ImageView();
 
 		iv1.setFitWidth(w);
@@ -418,20 +421,20 @@ public class Game extends Application {
 		root.getChildren().add(iv1);
 
 		ImageView iv2 = new ImageView();
-		Image modes = new Image("file:assets/Backgrounds/modes.png");
-		Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
+		Image modes = new Image("file:assets/backgrounds/modes.png");
+		Image modesfilled = new Image("file:assets/backgrounds/modesfilled.png");
 		iv2.setImage(modes);
 		iv2.setTranslateY(0);
 
 		ImageView iv3 = new ImageView();
-		Image music = new Image("file:assets/Backgrounds/music.png");
-		Image musicfilled = new Image("file:assets/Backgrounds/musicfilled.png");
+		Image music = new Image("file:assets/backgrounds/music.png");
+		Image musicfilled = new Image("file:assets/backgrounds/musicfilled.png");
 		iv3.setImage(music);
 		iv3.setTranslateY(0.17578125*h);
 
 		ImageView iv4 = new ImageView();
-		Image binds = new Image("file:assets/Backgrounds/binds.png");
-		Image bindsfilled = new Image("file:assets/Backgrounds/bindsfilled.png");
+		Image binds = new Image("file:assets/backgrounds/binds.png");
+		Image bindsfilled = new Image("file:assets/backgrounds/bindsfilled.png");
 		iv4.setImage(binds);
 		iv4.setTranslateY(0.3515625*h);
 
@@ -439,7 +442,7 @@ public class Game extends Application {
 		StackPane regPane = new StackPane();
 		Scene regularScene = new Scene(regPane, w, h, Color.BLACK);
 
-		Image regbg = new Image("file:assets/Backgrounds/regularmodebackground.jpg");
+		Image regbg = new Image("file:assets/backgrounds/regularmodebackground.jpg");
 		ImageView riv = new ImageView();
 		riv.setImage(regbg);
 		riv.setFitHeight(h);
@@ -458,7 +461,7 @@ public class Game extends Application {
 		StackPane mPane = new StackPane();
 		Scene multiplayerScene = new Scene(mPane, w, h, Color.BLACK);
 
-		Image multbg = new Image("file:assets/Backgrounds/2playerbackground.png");
+		Image multbg = new Image("file:assets/backgrounds/2playerbackground.png");
 		ImageView multiv = new ImageView();
 		multiv.setImage(multbg);
 		multiv.setFitHeight(h);
@@ -479,7 +482,7 @@ public class Game extends Application {
 
 		Scene blitzScene = new Scene(blitzPane, w, h, Color.BLACK);
 
-		Image blitzbg = new Image("file:assets/Backgrounds/blitzmodebackground.jpg");
+		Image blitzbg = new Image("file:assets/backgrounds/blitzmodebackground.jpg");
 		ImageView biv = new ImageView();
 		biv.setImage(blitzbg);
 		biv.setFitHeight(h);
@@ -585,7 +588,7 @@ public class Game extends Application {
 		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				s.setCursor(new ImageCursor(im));
 			}
 		});
