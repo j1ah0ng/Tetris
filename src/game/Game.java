@@ -1,17 +1,23 @@
 package game;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
@@ -35,7 +41,22 @@ public class Game extends Application {
 		//need audio files to check if this even works
 		
 		//MediaPlayer mp = new MediaPlayer(m); //import needs verifying
-		
+	    KeyCode DOWN = KeyCode.S;
+	    KeyCode RIGHT = KeyCode.D;
+	    KeyCode LEFT = KeyCode.A;
+		KeyCode ROTATE = KeyCode.R;
+	    KeyCode DROP = KeyCode.SPACE;
+	    KeyCode MPFRENZY = KeyCode.F;
+	    KeyCode MPDROP = KeyCode.G;
+
+	    KeyCode DOWN2 = KeyCode.DOWN;
+	    KeyCode RIGHT2 = KeyCode.RIGHT;
+	    KeyCode LEFT2 = KeyCode.LEFT;
+	    KeyCode ROTATE2 = KeyCode.COMMA;
+	    KeyCode DROP2 = KeyCode.PERIOD;
+	    KeyCode MPFRENZY2 = KeyCode.O;
+	    KeyCode MPDROP2 = KeyCode.P;
+
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
 
@@ -78,7 +99,6 @@ public class Game extends Application {
 		});
 
 		VBox vbox1 = new VBox();
-		//vbox1.setLayoutX(w / 2 - 100);
 		vbox1.setLayoutY(-h);
 
 		Text bindTitle = new Text("BINDS");
@@ -87,62 +107,223 @@ public class Game extends Application {
 
 		vbox1.getChildren().add(bindTitle);
 
-//		vbox1.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
-		vbox1.setPadding(new Insets(0, w / 2, 0, w / 2));
+		vbox1.setPadding(new Insets(h/30, w / 2, 0, w / 2));
 
 		bindsRoot.getChildren().addAll(vbox1, miv3);
 		
-		Image down = new Image("file:assets/Backgrounds/down.png");
-		Image right = new Image("file:assets/Backgrounds/right.png");
-		Image left = new Image("file:assets/Backgrounds/left.png");
-		Image rotate = new Image("file:assets/Backgrounds/rotate.png");
-		Image drop = new Image("file:assets/Backgrounds/drop.png");
-
-		ImageView ivdown = new ImageView(down);
-		ImageView ivright= new ImageView(right);
-		ImageView ivleft = new ImageView(left);
-		ImageView ivrotate = new ImageView(rotate);
-		ImageView ivdrop = new ImageView(drop);
+		Image n1= new Image("file:assets/Backgrounds/1.png");
+		Image n1filled = new Image("file:assets/Backgrounds/1filled.png");
+		ImageView num1 = new ImageView(n1filled);
 		
-		ivdown.setTranslateX(-1*w/3);
-		ivright.setTranslateX(-1*w/3);
-		ivleft.setTranslateX(-1*w/3);
-		ivrotate.setTranslateX(-1*w/3);
-		ivdrop.setTranslateX(-1*w/3);
-		
-		ivdown.setTranslateY(-150);
-		ivright.setTranslateY(-50);
-		ivleft.setTranslateY(50);
-		ivrotate.setTranslateY(150);
-		ivdrop.setTranslateY(250);
+		Image n2 = new Image("file:assets/Backgrounds/2.png");
+		Image n2filled = new Image("file:assets/Backgrounds/2filled.png");
+		ImageView num2 = new ImageView(n2);
+		num2.setFitWidth(45);
 
-		bindsRoot.getChildren().addAll(ivdown, ivright, ivleft, ivrotate, ivdrop);
+		boolean is1filled = true;
+		boolean is2filled = false;
+		
+		num1.setTranslateX(0.28125*w);
+		num2.setTranslateX(0.3625*w);
+		
+		num1.setTranslateY(-0.390625*h);
+		num2.setTranslateY(-0.390625*h);
+		
+		bindsRoot.getChildren().addAll(num1, num2);
+
+
+//		Image down = new Image("file:assets/Backgrounds/down.png");
+//		Image right = new Image("file:assets/Backgrounds/right.png");
+//		Image left = new Image("file:assets/Backgrounds/left.png");
+//		Image rotate = new Image("file:assets/Backgrounds/rotate.png");
+//		Image drop = new Image("file:assets/Backgrounds/drop.png");
+//
+//		ImageView ivdown = new ImageView(down);
+//		ImageView ivright= new ImageView(right);
+//		ImageView ivleft = new ImageView(left);
+//		ImageView ivrotate = new ImageView(rotate);
+//		ImageView ivdrop = new ImageView(drop);
+//		
+//		ivdown.setTranslateX(-1*w/3);
+//		ivright.setTranslateX(-1*w/3);
+//		ivleft.setTranslateX(-1*w/3);
+//		ivrotate.setTranslateX(-1*w/3);
+//		ivdrop.setTranslateX(-1*w/3);
+//		
+//		ivdown.setTranslateY(-150);
+//		ivright.setTranslateY(-50);
+//		ivleft.setTranslateY(50);
+//		ivrotate.setTranslateY(150);
+//		ivdrop.setTranslateY(250);
+		
+		Text down = new Text("DOWN");
+		Text right = new Text("RIGHT");
+		Text left = new Text("LEFT");
+		Text rotate = new Text("ROTATE");
+		Text drop = new Text("DROP");
+		Text mpfrenzy = new Text("MP FRENZY");
+		Text mpdrop = new Text("MP DROP");
+
+		down.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		right.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		left.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		rotate.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		drop.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		mpfrenzy.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		mpdrop.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		
+		down.setFill(Color.GOLD);
+		right.setFill(Color.GOLD);
+		left.setFill(Color.GOLD);
+		rotate.setFill(Color.GOLD);
+		drop.setFill(Color.GOLD);
+		mpfrenzy.setFill(Color.GOLD);
+		mpdrop.setFill(Color.GOLD);
+		
+		down.setTranslateX(-1*w/3);
+		right.setTranslateX(-1*w/3);
+		left.setTranslateX(-1*w/3);
+		rotate.setTranslateX(-1*w/3);
+		drop.setTranslateX(-1*w/3);
+		mpfrenzy.setTranslateX(-1*w/3);
+		mpdrop.setTranslateX(-1*w/3);
+
+		down.setTranslateY(-0.265625*h);
+		right.setTranslateY(-0.1484375*h);
+		left.setTranslateY(-0.03125*h);
+		rotate.setTranslateY(0.0859375*h);
+		drop.setTranslateY(0.203125*h);
+		mpfrenzy.setTranslateY(0.3203125*h);
+		mpdrop.setTranslateY(0.4375*h);
+		
+		bindsRoot.getChildren().addAll(down, right, left, rotate, drop, mpfrenzy, mpdrop);
 
 		Image change = new Image("file:assets/Backgrounds/change.png");
+		Image changefilled = new Image("file:assets/Backgrounds/changefilled.png");
 
 		ImageView ivchange1 = new ImageView(change);
 		ImageView ivchange2 = new ImageView(change);
 		ImageView ivchange3 = new ImageView(change);
 		ImageView ivchange4 = new ImageView(change);
 		ImageView ivchange5 = new ImageView(change);
-		
+		ImageView ivchange6 = new ImageView(change);
+		ImageView ivchange7 = new ImageView(change);
+
 		ivchange1.setTranslateX(1*w/3);
 		ivchange2.setTranslateX(1*w/3);
 		ivchange3.setTranslateX(1*w/3);
 		ivchange4.setTranslateX(1*w/3);
 		ivchange5.setTranslateX(1*w/3);
-		
-		ivchange1.setTranslateY(-150);
-		ivchange2.setTranslateY(-50);
-		ivchange3.setTranslateY(50);
-		ivchange4.setTranslateY(150);
-		ivchange5.setTranslateY(250);
+		ivchange6.setTranslateX(1*w/3);
+		ivchange7.setTranslateX(1*w/3);
+
+		ivchange1.setTranslateY(-0.265625*h);
+		ivchange2.setTranslateY(-0.1484375*h);
+		ivchange3.setTranslateY(-0.03125*h);
+		ivchange4.setTranslateY(0.0859375*h);
+		ivchange5.setTranslateY(0.203125*h);
+		ivchange6.setTranslateY(0.3203125*h);
+		ivchange7.setTranslateY(0.4375*h);
 				
-		bindsRoot.getChildren().addAll(ivchange1, ivchange2, ivchange3, ivchange4, ivchange5);
+		bindsRoot.getChildren().addAll(ivchange1, ivchange2, ivchange3, ivchange4, ivchange5, ivchange6, ivchange7);
 
+		Text tdown = new Text(""+DOWN.getName());
+		Text tright = new Text(""+RIGHT.getName());
+		Text tleft = new Text(""+LEFT.getName());
+		Text trotate = new Text(""+ROTATE.getName());
+		Text tdrop = new Text(""+DROP.getName());
+		Text tmpfrenzy = new Text(""+MPFRENZY.getName());
+		Text tmpdrop = new Text(""+MPDROP.getName());
+		
+		tdown.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tright.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tleft.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		trotate.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tdrop.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tmpfrenzy.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tmpdrop.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
 
+		tdown.setFill(Color.GOLD);
+		tright.setFill(Color.GOLD);
+		tleft.setFill(Color.GOLD);
+		trotate.setFill(Color.GOLD);
+		tdrop.setFill(Color.GOLD);
+		tmpfrenzy.setFill(Color.GOLD);
+		tmpdrop.setFill(Color.GOLD);
+
+		tdown.setTranslateY(-0.265625*h);
+		tright.setTranslateY(-0.1484375*h);
+		tleft.setTranslateY(-0.03125*h);
+		trotate.setTranslateY(0.0859375*h);
+		tdrop.setTranslateY(0.203125*h);
+		tmpfrenzy.setTranslateY(0.3203125*h);
+		tmpdrop.setTranslateY(0.4375*h);
+		
+		Text tdown2 = new Text(""+DOWN2.getName());
+		Text tright2 = new Text(""+RIGHT2.getName());
+		Text tleft2 = new Text(""+LEFT2.getName());
+		Text trotate2 = new Text(""+ROTATE2.getName());
+		Text tdrop2 = new Text(""+DROP2.getName());
+		Text tmpfrenzy2 = new Text(""+MPFRENZY2.getName());
+		Text tmpdrop2 = new Text(""+MPDROP2.getName());
+		
+		tdown2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tright2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tleft2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		trotate2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tdrop2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tmpfrenzy2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+		tmpdrop2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
+
+		tdown2.setFill(Color.TRANSPARENT);
+		tright2.setFill(Color.TRANSPARENT);
+		tleft2.setFill(Color.TRANSPARENT);
+		trotate2.setFill(Color.TRANSPARENT);
+		tdrop2.setFill(Color.TRANSPARENT);
+		tmpfrenzy2.setFill(Color.TRANSPARENT);
+		tmpdrop2.setFill(Color.TRANSPARENT);
+
+		tdown2.setTranslateY(-0.265625*h);
+		tright2.setTranslateY(-0.1484375*h);
+		tleft2.setTranslateY(-0.03125*h);
+		trotate2.setTranslateY(0.0859375*h);
+		tdrop2.setTranslateY(0.203125*h);
+		tmpfrenzy2.setTranslateY(0.3203125*h);
+		tmpdrop2.setTranslateY(0.4375*h);
 		
 		
+				
+		bindsRoot.getChildren().addAll(tdown, tright, tleft, trotate, tdrop, tmpfrenzy, tmpdrop, 
+				tdown2, tright2, tleft2, trotate2, tdrop2, tmpfrenzy2, tmpdrop2);
+
+		
+		//choosing buttons scene
+//		StackPane buttonRoot = new StackPane();
+//		Scene buttonScene = new Scene(buttonRoot, w, h, Color.BLACK);
+//		buttonRoot.setStyle("-fx-background-color: #000000");
+//		buttonRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
+//			@Override
+//			public void handle(MouseEvent e) {
+//				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
+//				buttonRoot.setCursor(new ImageCursor(im));
+//			}
+//		});
+		/////////////////////////////////////////////////////////////////////////////////////////////////Text pick = new Text()
+		
+		ivchange1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {		
+				TextInputDialog input = new TextInputDialog();
+				input.setHeaderText("Enter button on keyboard");
+				input.showAndWait();
+				String answer = input.getEditor().getText();
+					Alert success = new Alert(AlertType.CONFIRMATION, "Successfully changed key to "+answer,
+							ButtonType.OK);
+					success.showAndWait();
+			}
+		});
+			
+					
 		
 		
 		// Music scene
@@ -449,12 +630,163 @@ public class Game extends Application {
 				s.setCursor(new ImageCursor(im));
 			}
 		});
-
+		
+		ivchange1.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange1.setImage(changefilled);
+			}
+		});
+		
+		ivchange2.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange2.setImage(changefilled);
+			}
+		});
+		
+		ivchange3.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange3.setImage(changefilled);
+			}
+		});
+		
+		ivchange4.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange4.setImage(changefilled);
+			}
+		});
+		
+		ivchange5.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange5.setImage(changefilled);
+			}
+		});
+		
+		ivchange6.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange6.setImage(changefilled);
+			}
+		});
+		
+		ivchange7.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange7.setImage(changefilled);
+			}
+		});
+		
+		ivchange1.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange1.setImage(change);
+			}
+		});
+		
+		ivchange2.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange2.setImage(change);
+			}
+		});
+		
+		ivchange3.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange3.setImage(change);
+			}
+		});
+		
+		ivchange4.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange4.setImage(change);
+			}
+		});
+		
+		ivchange5.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange5.setImage(change);
+			}
+		});
+		
+		ivchange6.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange6.setImage(change);
+			}
+		});
+		
+		ivchange7.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivchange7.setImage(change);
+			}
+		});
+		
+		num1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				if (num1.getImage().equals(n1)) {
+					num1.setImage(n1filled);
+					num2.setImage(n2);
+					tdown.setFill(Color.GOLD);
+					tright.setFill(Color.GOLD);
+					tleft.setFill(Color.GOLD);
+					trotate.setFill(Color.GOLD);
+					tdrop.setFill(Color.GOLD);
+					tmpfrenzy.setFill(Color.GOLD);
+					tmpdrop.setFill(Color.GOLD);
+					tdown2.setFill(Color.TRANSPARENT);
+					tright2.setFill(Color.TRANSPARENT);
+					tleft2.setFill(Color.TRANSPARENT);
+					trotate2.setFill(Color.TRANSPARENT);
+					tdrop2.setFill(Color.TRANSPARENT);
+					tmpfrenzy2.setFill(Color.TRANSPARENT);
+					tmpdrop2.setFill(Color.TRANSPARENT);
+				}
+			}
+		});
+		
+		num2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				if (num2.getImage().equals(n2)) {
+					num2.setImage(n2filled);
+					num1.setImage(n1);
+					tdown.setFill(Color.TRANSPARENT);
+					tright.setFill(Color.TRANSPARENT);
+					tleft.setFill(Color.TRANSPARENT);
+					trotate.setFill(Color.TRANSPARENT);
+					tdrop.setFill(Color.TRANSPARENT);
+					tmpfrenzy.setFill(Color.TRANSPARENT);
+					tmpdrop.setFill(Color.TRANSPARENT);
+					tdown2.setFill(Color.GOLD);
+					tright2.setFill(Color.GOLD);
+					tleft2.setFill(Color.GOLD);
+					trotate2.setFill(Color.GOLD);
+					tdrop2.setFill(Color.GOLD);
+					tmpfrenzy2.setFill(Color.GOLD);
+					tmpdrop2.setFill(Color.GOLD);
+				}
+			}
+		});
+		
+		
 		stage.setScene(s);
 		stage.show();
 	}
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	public void endGame() {
+		Platform.exit();
 	}
 }
