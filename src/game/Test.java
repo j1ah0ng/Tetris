@@ -10,7 +10,7 @@ public class Test extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        TetrominoWorld world = new TetrominoWorld((long)(1e9));
+        TetrominoWorld world = new TetrominoWorld(null , (long)1e9);
         world.start();
 
         stage.setScene(new Scene(world));

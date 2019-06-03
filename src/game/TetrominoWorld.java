@@ -23,13 +23,14 @@ public class TetrominoWorld extends World {
     }
 
     // Blank block image
-    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/ux0.png");
+    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/32ux0.png");
 
     // Blank grid
     public static ImageView[][] BLANK_GRID;
 
     // Array of all possible Block types
-    public static final Block[] BLOCKS = {Block.BLOCK_BASE};
+    public static final Block[] BLOCKS = {Block.DARK_RED, Block.GREEN, Block.ORANGE, Block.PURPLE,
+        Block.RED, Block.TURQUOISE, Block.YELLOW};
 
     // Rotation matrix
     public static final int[][] R_MAT =
@@ -71,15 +72,16 @@ public class TetrominoWorld extends World {
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
     private boolean gameOver;
-    // Flag variable for having touched the bottom stack
+    private Game game;
 
     private ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
     private ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
     private int nextTetromino;              // int representing ID of the next falling tetromino
 
     // Constructors
-    public TetrominoWorld(long delay) {
+    public TetrominoWorld(Game game, long delay) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -89,11 +91,12 @@ public class TetrominoWorld extends World {
         rowsEliminated = 0;
         gameOver = false;
 
-        initialise();
+        initialize();
     }
 
-    public TetrominoWorld(long delay, long delayAccel) {
+    public TetrominoWorld(Game game, long delay, long delayAccel) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -103,11 +106,12 @@ public class TetrominoWorld extends World {
         rowsEliminated = 0;
         gameOver = false;
 
-        initialise();
+        initialize();
     }
 
-    public TetrominoWorld(long delay, long delayAccel, GameMode mode) {
+    public TetrominoWorld(Game game, long delay, long delayAccel, GameMode mode) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -130,7 +134,7 @@ public class TetrominoWorld extends World {
                 break;
         }
 
-        initialise();
+        initialize();
     }
 
     // Public getter and setter functions
@@ -155,14 +159,14 @@ public class TetrominoWorld extends World {
     @Override
     protected void act(long now) {
 
+        // Stop acting if game is over
         if (gameOver) return;
-
-        // Fix overflows
-        // if (Long.MAX_VALUE - now + 1000 > delay) lastRun = Long.MIN_VALUE;
 
         // Check whether we've reached a new tick
         if (now - lastRun > delay) {
-            System.out.println("Time: " + System.currentTimeMillis());
+
+            // Debug statement
+            // System.out.println("Time: " + System.currentTimeMillis());
 
             delay += (delayAccel) * (now - lastRun);
 
@@ -291,11 +295,7 @@ public class TetrominoWorld extends World {
                 }
                 removeKey(this.right);
             } else if (hasKey(this.done)) {
-                while (!checkCollisions(0, 1)) {
-                    for (ImageView i : fallingBlocks) {
-                        setRowIndex(i, getRowIndex(i) + 1);
-                    }
-                }
+                drop();
                 removeKey(this.done);
             }
         } else {
@@ -337,7 +337,7 @@ public class TetrominoWorld extends World {
         if (MULTIPLAYER && opponent != null) mpAct();
 
         // Deal with blitz
-        if (msElapsed() > BLITZ_LENGTH_NS) stop();
+        if (msElapsed() > BLITZ_LENGTH_NS) endGame();
     }
 
     // Private helper functions
@@ -411,7 +411,7 @@ public class TetrominoWorld extends World {
     }
 
     /** Fills the board with blank Blocks. */
-    private void initialise() {
+    private void initialize() {
         BLANK_GRID = new ImageView[HEIGHT][WIDTH];
 
         for (int row = 0; row < HEIGHT; ++row) {
@@ -458,6 +458,12 @@ public class TetrominoWorld extends World {
         spawnNew = checkCollisions(0, 1);
     }
 
+    private void endGame() {
+        if (game != null) game.endGame();
+        stop();
+        spawnNew = false;
+    }
+
     private void handleSpawn() {
         // Make the currently falling block the next one
         fallingBlocks = nextBlocks;
@@ -485,7 +491,6 @@ public class TetrominoWorld extends World {
             for (ImageView i : fallingBlocks) {
                 getChildren().remove(i);
             }
-            spawnNew = false;
             endGame();
             return;
         }
@@ -588,14 +593,14 @@ public class TetrominoWorld extends World {
             }
         };
 
-        delay *= FRENZY_SPEED_SCALAR;
+        delay /= FRENZY_SPEED_SCALAR;
         frenzyStartTimeNs = (long) (System.currentTimeMillis() * 1e6);
         frenzyTimer.start();
     }
 
     private void handleFrenzy(long l, AnimationTimer timer) {
         if (frenzyStartTimeNs + FRENZY_LENGTH_NS <= l) {
-            delay /= FRENZY_SPEED_SCALAR;
+            delay *= FRENZY_SPEED_SCALAR;
             timer.stop();
         }
         act(l);
