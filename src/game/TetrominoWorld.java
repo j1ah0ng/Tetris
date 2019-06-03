@@ -71,15 +71,16 @@ public class TetrominoWorld extends World {
     private long lastRun;           // Last run of act()
     private boolean spawnNew;       // Whether it should spawn a new block this tick
     private boolean gameOver;
-    // Flag variable for having touched the bottom stack
+    private Game game;
 
     private ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
     private ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
     private int nextTetromino;              // int representing ID of the next falling tetromino
 
     // Constructors
-    public TetrominoWorld(long delay) {
+    public TetrominoWorld(Game game, long delay) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -92,8 +93,9 @@ public class TetrominoWorld extends World {
         initialise();
     }
 
-    public TetrominoWorld(long delay, long delayAccel) {
+    public TetrominoWorld(Game game, long delay, long delayAccel) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -106,8 +108,9 @@ public class TetrominoWorld extends World {
         initialise();
     }
 
-    public TetrominoWorld(long delay, long delayAccel, GameMode mode) {
+    public TetrominoWorld(Game game, long delay, long delayAccel, GameMode mode) {
         super();
+        this.game = game;
         lastRun = 0;
         spawnNew = true;
         this.delay = delay;
@@ -486,7 +489,7 @@ public class TetrominoWorld extends World {
                 getChildren().remove(i);
             }
             spawnNew = false;
-            endGame();
+            if (game != null) game.endGame();
             return;
         }
 

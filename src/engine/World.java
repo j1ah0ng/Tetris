@@ -36,10 +36,6 @@ public abstract class World extends javafx.scene.layout.GridPane {
         newTimer();
     }
 
-    protected void endGame() {
-        stop();
-    }
-
     private void newTimer() {
         t = new AnimationTimer() {
             @Override
