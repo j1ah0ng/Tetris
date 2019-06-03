@@ -1,7 +1,6 @@
 /bin/
 /.idea
 /out
-*.pyc
 /bazel-*
 /compile_commands.json
 aos_log-*
@@ -13,3 +12,4 @@ aos_log-*
 *.classpath
 *.idea
 *.orig
+*.pyc
