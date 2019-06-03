@@ -68,7 +68,7 @@ public class Game extends Application {
 
 		StackPane bindsRoot = new StackPane();
 		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
-		bindsRoot.setStyle("-fx-background-color: #ffffff");
+		bindsRoot.setStyle("-fx-background-color: #000000");
 		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -78,19 +78,73 @@ public class Game extends Application {
 		});
 
 		VBox vbox1 = new VBox();
-		vbox1.setLayoutX(w / 2 - 100);
-		vbox1.setLayoutY(h / 2 - 100);
+		//vbox1.setLayoutX(w / 2 - 100);
+		vbox1.setLayoutY(-h);
 
 		Text bindTitle = new Text("BINDS");
 		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
-		bindTitle.setFill(Color.BLACK);
+		bindTitle.setFill(Color.GOLD);
 
 		vbox1.getChildren().add(bindTitle);
 
-		vbox1.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
+//		vbox1.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
+		vbox1.setPadding(new Insets(0, w / 2, 0, w / 2));
 
 		bindsRoot.getChildren().addAll(vbox1, miv3);
+		
+		Image down = new Image("file:assets/Backgrounds/down.png");
+		Image right = new Image("file:assets/Backgrounds/right.png");
+		Image left = new Image("file:assets/Backgrounds/left.png");
+		Image rotate = new Image("file:assets/Backgrounds/rotate.png");
+		Image drop = new Image("file:assets/Backgrounds/drop.png");
 
+		ImageView ivdown = new ImageView(down);
+		ImageView ivright= new ImageView(right);
+		ImageView ivleft = new ImageView(left);
+		ImageView ivrotate = new ImageView(rotate);
+		ImageView ivdrop = new ImageView(drop);
+		
+		ivdown.setTranslateX(-1*w/3);
+		ivright.setTranslateX(-1*w/3);
+		ivleft.setTranslateX(-1*w/3);
+		ivrotate.setTranslateX(-1*w/3);
+		ivdrop.setTranslateX(-1*w/3);
+		
+		ivdown.setTranslateY(-150);
+		ivright.setTranslateY(-50);
+		ivleft.setTranslateY(50);
+		ivrotate.setTranslateY(150);
+		ivdrop.setTranslateY(250);
+
+		bindsRoot.getChildren().addAll(ivdown, ivright, ivleft, ivrotate, ivdrop);
+
+		Image change = new Image("file:assets/Backgrounds/change.png");
+
+		ImageView ivchange1 = new ImageView(change);
+		ImageView ivchange2 = new ImageView(change);
+		ImageView ivchange3 = new ImageView(change);
+		ImageView ivchange4 = new ImageView(change);
+		ImageView ivchange5 = new ImageView(change);
+		
+		ivchange1.setTranslateX(1*w/3);
+		ivchange2.setTranslateX(1*w/3);
+		ivchange3.setTranslateX(1*w/3);
+		ivchange4.setTranslateX(1*w/3);
+		ivchange5.setTranslateX(1*w/3);
+		
+		ivchange1.setTranslateY(-150);
+		ivchange2.setTranslateY(-50);
+		ivchange3.setTranslateY(50);
+		ivchange4.setTranslateY(150);
+		ivchange5.setTranslateY(250);
+				
+		bindsRoot.getChildren().addAll(ivchange1, ivchange2, ivchange3, ivchange4, ivchange5);
+
+
+		
+		
+		
+		
 		// Music scene
 
 		StackPane musicRoot = new StackPane();
