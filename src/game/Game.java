@@ -13,11 +13,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
@@ -41,24 +44,24 @@ public class Game extends Application {
 		//need audio files to check if this even works
 		
 		//MediaPlayer mp = new MediaPlayer(m); //import needs verifying
-	    KeyCode DOWN = KeyCode.S;
-	    KeyCode RIGHT = KeyCode.D;
-	    KeyCode LEFT = KeyCode.A;
-		KeyCode ROTATE = KeyCode.R;
-	    KeyCode DROP = KeyCode.SPACE;
-	    KeyCode MPFRENZY = KeyCode.F;
-	    KeyCode MPDROP = KeyCode.G;
+	    KeyCode kdown = KeyCode.S;
+	    KeyCode kright = KeyCode.D;
+	    KeyCode kleft = KeyCode.A;
+		KeyCode krotate = KeyCode.R;
+	    KeyCode kdrop = KeyCode.SPACE;
+	    KeyCode kmpfrenzy = KeyCode.F;
+	    KeyCode kmpdrop = KeyCode.G;
 
-	    KeyCode DOWN2 = KeyCode.DOWN;
-	    KeyCode RIGHT2 = KeyCode.RIGHT;
-	    KeyCode LEFT2 = KeyCode.LEFT;
-	    KeyCode ROTATE2 = KeyCode.COMMA;
-	    KeyCode DROP2 = KeyCode.PERIOD;
-	    KeyCode MPFRENZY2 = KeyCode.O;
-	    KeyCode MPDROP2 = KeyCode.P;
+	    KeyCode kdown2 = KeyCode.DOWN;
+	    KeyCode kright2 = KeyCode.RIGHT;
+	    KeyCode kleft2 = KeyCode.LEFT;
+	    KeyCode krotate2 = KeyCode.COMMA;
+	    KeyCode kdrop2 = KeyCode.PERIOD;
+	    KeyCode kmpfrenzy2 = KeyCode.O;
+	    KeyCode kmpdrop2 = KeyCode.P;
 
 		stage.setTitle("Tetris");
-		stage.setResizable(true);
+		stage.setResizable(false);
 
 		int w = 800;
 		int h = 640;
@@ -89,6 +92,9 @@ public class Game extends Application {
 
 		StackPane bindsRoot = new StackPane();
 		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
+		TextField t = new TextField();
+		t.setTranslateY(-h);
+		bindsRoot.getChildren().addAll(t);
 		bindsRoot.setStyle("-fx-background-color: #000000");
 		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
@@ -120,8 +126,6 @@ public class Game extends Application {
 		ImageView num2 = new ImageView(n2);
 		num2.setFitWidth(45);
 
-		boolean is1filled = true;
-		boolean is2filled = false;
 		
 		num1.setTranslateX(0.28125*w);
 		num2.setTranslateX(0.3625*w);
@@ -130,31 +134,6 @@ public class Game extends Application {
 		num2.setTranslateY(-0.390625*h);
 		
 		bindsRoot.getChildren().addAll(num1, num2);
-
-
-//		Image down = new Image("file:assets/Backgrounds/down.png");
-//		Image right = new Image("file:assets/Backgrounds/right.png");
-//		Image left = new Image("file:assets/Backgrounds/left.png");
-//		Image rotate = new Image("file:assets/Backgrounds/rotate.png");
-//		Image drop = new Image("file:assets/Backgrounds/drop.png");
-//
-//		ImageView ivdown = new ImageView(down);
-//		ImageView ivright= new ImageView(right);
-//		ImageView ivleft = new ImageView(left);
-//		ImageView ivrotate = new ImageView(rotate);
-//		ImageView ivdrop = new ImageView(drop);
-//		
-//		ivdown.setTranslateX(-1*w/3);
-//		ivright.setTranslateX(-1*w/3);
-//		ivleft.setTranslateX(-1*w/3);
-//		ivrotate.setTranslateX(-1*w/3);
-//		ivdrop.setTranslateX(-1*w/3);
-//		
-//		ivdown.setTranslateY(-150);
-//		ivright.setTranslateY(-50);
-//		ivleft.setTranslateY(50);
-//		ivrotate.setTranslateY(150);
-//		ivdrop.setTranslateY(250);
 		
 		Text down = new Text("DOWN");
 		Text right = new Text("RIGHT");
@@ -200,7 +179,10 @@ public class Game extends Application {
 
 		Image change = new Image("file:assets/Backgrounds/change.png");
 		Image changefilled = new Image("file:assets/Backgrounds/changefilled.png");
+		
 
+		
+		
 		ImageView ivchange1 = new ImageView(change);
 		ImageView ivchange2 = new ImageView(change);
 		ImageView ivchange3 = new ImageView(change);
@@ -227,13 +209,13 @@ public class Game extends Application {
 				
 		bindsRoot.getChildren().addAll(ivchange1, ivchange2, ivchange3, ivchange4, ivchange5, ivchange6, ivchange7);
 
-		Text tdown = new Text(""+DOWN.getName());
-		Text tright = new Text(""+RIGHT.getName());
-		Text tleft = new Text(""+LEFT.getName());
-		Text trotate = new Text(""+ROTATE.getName());
-		Text tdrop = new Text(""+DROP.getName());
-		Text tmpfrenzy = new Text(""+MPFRENZY.getName());
-		Text tmpdrop = new Text(""+MPDROP.getName());
+		Text tdown = new Text(kdown.getName());
+		Text tright = new Text(kright.getName());
+		Text tleft = new Text(kleft.getName());
+		Text trotate = new Text(krotate.getName());
+		Text tdrop = new Text(kdrop.getName());
+		Text tmpfrenzy = new Text(kmpfrenzy.getName());
+		Text tmpdrop = new Text(kmpdrop.getName());
 		
 		tdown.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
 		tright.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
@@ -259,13 +241,13 @@ public class Game extends Application {
 		tmpfrenzy.setTranslateY(0.3203125*h);
 		tmpdrop.setTranslateY(0.4375*h);
 		
-		Text tdown2 = new Text(""+DOWN2.getName());
-		Text tright2 = new Text(""+RIGHT2.getName());
-		Text tleft2 = new Text(""+LEFT2.getName());
-		Text trotate2 = new Text(""+ROTATE2.getName());
-		Text tdrop2 = new Text(""+DROP2.getName());
-		Text tmpfrenzy2 = new Text(""+MPFRENZY2.getName());
-		Text tmpdrop2 = new Text(""+MPDROP2.getName());
+		Text tdown2 = new Text(kdown2.getName());
+		Text tright2 = new Text(kright2.getName());
+		Text tleft2 = new Text(kleft2.getName());
+		Text trotate2 = new Text(krotate2.getName());
+		Text tdrop2 = new Text(kdrop2.getName());
+		Text tmpfrenzy2 = new Text(kmpfrenzy2.getName());
+		Text tmpdrop2 = new Text(kmpdrop2.getName());
 		
 		tdown2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
 		tright2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
@@ -295,36 +277,6 @@ public class Game extends Application {
 				
 		bindsRoot.getChildren().addAll(tdown, tright, tleft, trotate, tdrop, tmpfrenzy, tmpdrop, 
 				tdown2, tright2, tleft2, trotate2, tdrop2, tmpfrenzy2, tmpdrop2);
-
-		
-		//choosing buttons scene
-//		StackPane buttonRoot = new StackPane();
-//		Scene buttonScene = new Scene(buttonRoot, w, h, Color.BLACK);
-//		buttonRoot.setStyle("-fx-background-color: #000000");
-//		buttonRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent e) {
-//				Image im = new Image("file:assets/Backgrounds/cursornormal.png");
-//				buttonRoot.setCursor(new ImageCursor(im));
-//			}
-//		});
-		/////////////////////////////////////////////////////////////////////////////////////////////////Text pick = new Text()
-		
-		ivchange1.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {		
-				TextInputDialog input = new TextInputDialog();
-				input.setHeaderText("Enter button on keyboard");
-				input.showAndWait();
-				String answer = input.getEditor().getText();
-					Alert success = new Alert(AlertType.CONFIRMATION, "Successfully changed key to "+answer,
-							ButtonType.OK);
-					success.showAndWait();
-			}
-		});
-			
-					
-		
 		
 		// Music scene
 
@@ -332,7 +284,7 @@ public class Game extends Application {
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
 		musicRoot.setStyle("-fx-background-color: #000000");
 
-		// hard to see tetromino cursor on sliderso keep default cursor
+		// hard to see tetromino cursor on slider so keep default cursor
 
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
@@ -458,19 +410,16 @@ public class Game extends Application {
 		ImageView iv2 = new ImageView();
 		Image modes = new Image("file:assets/Backgrounds/modes.png");
 		Image modesfilled = new Image("file:assets/Backgrounds/modesfilled.png");
-		// setfitwidth and height?
 		iv2.setImage(modes);
 		iv2.setTranslateY(0);
 
 		ImageView iv3 = new ImageView();
-		// HBox hb2 = new HBox();
 		Image music = new Image("file:assets/Backgrounds/music.png");
 		Image musicfilled = new Image("file:assets/Backgrounds/musicfilled.png");
 		iv3.setImage(music);
 		iv3.setTranslateY(0.17578125*h);
 
 		ImageView iv4 = new ImageView();
-		// HBox hb2 = new HBox();
 		Image binds = new Image("file:assets/Backgrounds/binds.png");
 		Image bindsfilled = new Image("file:assets/Backgrounds/bindsfilled.png");
 		iv4.setImage(binds);
@@ -777,6 +726,163 @@ public class Game extends Application {
 			}
 		});
 		
+		Alert alert = new Alert(AlertType.NONE, "Click OK then enter button on keyboard",
+				ButtonType.OK);
+		alert.setTitle("Button Change");
+		
+		ivchange1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kdown = ke.getCode();
+							tdown.setText(kdown.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kdown2 = ke.getCode();
+							tdown2.setText(kdown2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kright = ke.getCode();
+							tright.setText(kright.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kright2 = ke.getCode();
+							tright2.setText(kright2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange3.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kleft = ke.getCode();
+							tleft.setText(kleft.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kleft2 = ke.getCode();
+							tleft2.setText(kleft2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange4.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode krotate = ke.getCode();
+							trotate.setText(krotate.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode krotate2 = ke.getCode();
+							trotate2.setText(krotate2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange5.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kdrop = ke.getCode();
+							tdrop.setText(kdrop.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kdrop2 = ke.getCode();
+							tdrop2.setText(kdrop2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange6.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kmpfrenzy = ke.getCode();
+							tmpfrenzy.setText(kmpfrenzy.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kmpfrenzy2 = ke.getCode();
+							tmpfrenzy2.setText(kmpfrenzy2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
+		
+		ivchange7.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				alert.showAndWait();
+				t.setDisable(false);
+				t.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent ke) {
+						if (num1.getImage().equals(n1filled)) {
+							KeyCode kmpdrop = ke.getCode();
+							tmpdrop.setText(kmpdrop.getName());
+							t.setDisable(true);
+						} else {
+							KeyCode kmpdrop2 = ke.getCode();
+							tmpdrop2.setText(kmpdrop2.getName());
+							t.setDisable(true);
+						}
+					}
+				});
+			}
+		});
 		
 		stage.setScene(s);
 		stage.show();
