@@ -1,5 +1,7 @@
 package game;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -40,10 +42,10 @@ public class Game extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-	    //Media m = new Media(null);//import needs verifying also
-		//need audio files to check if this even works
-		
-		//MediaPlayer mp = new MediaPlayer(m); //import needs verifying
+		Media media = new Media("file:/C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
+	    MediaPlayer mp = new MediaPlayer(media); 
+	    mp.play();
+	       
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
 	    KeyCode kleft = KeyCode.A;
@@ -180,9 +182,6 @@ public class Game extends Application {
 		Image change = new Image("file:assets/Backgrounds/change.png");
 		Image changefilled = new Image("file:assets/Backgrounds/changefilled.png");
 		
-
-		
-		
 		ImageView ivchange1 = new ImageView(change);
 		ImageView ivchange2 = new ImageView(change);
 		ImageView ivchange3 = new ImageView(change);
@@ -190,6 +189,22 @@ public class Game extends Application {
 		ImageView ivchange5 = new ImageView(change);
 		ImageView ivchange6 = new ImageView(change);
 		ImageView ivchange7 = new ImageView(change);
+		
+		ivchange1.setPreserveRatio(true);
+		ivchange2.setPreserveRatio(true);
+		ivchange3.setPreserveRatio(true);
+		ivchange4.setPreserveRatio(true);
+		ivchange5.setPreserveRatio(true);
+		ivchange6.setPreserveRatio(true);
+		ivchange7.setPreserveRatio(true);
+		
+		ivchange1.setFitWidth(120);
+		ivchange2.setFitWidth(120);
+		ivchange3.setFitWidth(120);
+		ivchange4.setFitWidth(120);
+		ivchange5.setFitWidth(120);
+		ivchange6.setFitWidth(120);
+		ivchange7.setFitWidth(120);
 
 		ivchange1.setTranslateX(1*w/3);
 		ivchange2.setTranslateX(1*w/3);
@@ -295,15 +310,22 @@ public class Game extends Application {
 		musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		musicTitle.setFill(Color.WHITE);
 
-		Slider slide = new Slider();
-		slide.setMin(0);
-		slide.setMax(100);
-		slide.setShowTickMarks(true);
-		slide.setMajorTickUnit(10);
-		slide.setShowTickLabels(true);
-		//slide.setValue(mp.getVolume());
+		Slider slider = new Slider();
+		slider.setMin(0);
+		slider.setMax(1);
+		slider.setShowTickMarks(true);
+		slider.setMajorTickUnit(0.1);
+		slider.setShowTickLabels(true);
+		slider.setValue(mp.getVolume());
+		System.out.println(mp.getVolume());
+		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				mp.setVolume(slider.getValue());
+			}
+		});
 		
-		vbox2.getChildren().addAll(musicTitle, slide);
+		vbox2.getChildren().addAll(musicTitle, slider);
 
 		vbox2.setPadding(new Insets(h / 3, w / 2, 0, w / 2));
 
