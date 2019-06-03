@@ -28,7 +28,5 @@ public enum Block {
         return filename;
     }
 
-    public Image getImage() {
-        return image;
-    }
+    public Image getImage() { return image; }
 }

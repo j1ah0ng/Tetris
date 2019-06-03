@@ -341,7 +341,7 @@ public class TetrominoWorld extends World {
         if (MULTIPLAYER && opponent != null) mpAct();
 
         // Deal with blitz
-        if (msElapsed() > BLITZ_LENGTH_NS) stop();
+        if (msElapsed() > BLITZ_LENGTH_NS) endGame();
     }
 
     // Private helper functions
@@ -462,6 +462,12 @@ public class TetrominoWorld extends World {
         spawnNew = checkCollisions(0, 1);
     }
 
+    private void endGame() {
+        if (game != null) game.endGame();
+        stop();
+        spawnNew = false;
+    }
+
     private void handleSpawn() {
         // Make the currently falling block the next one
         fallingBlocks = nextBlocks;
@@ -489,8 +495,7 @@ public class TetrominoWorld extends World {
             for (ImageView i : fallingBlocks) {
                 getChildren().remove(i);
             }
-            spawnNew = false;
-            if (game != null) game.endGame();
+            endGame();
             return;
         }
 
@@ -592,14 +597,14 @@ public class TetrominoWorld extends World {
             }
         };
 
-        delay *= FRENZY_SPEED_SCALAR;
+        delay /= FRENZY_SPEED_SCALAR;
         frenzyStartTimeNs = (long) (System.currentTimeMillis() * 1e6);
         frenzyTimer.start();
     }
 
     private void handleFrenzy(long l, AnimationTimer timer) {
         if (frenzyStartTimeNs + FRENZY_LENGTH_NS <= l) {
-            delay /= FRENZY_SPEED_SCALAR;
+            delay *= FRENZY_SPEED_SCALAR;
             timer.stop();
         }
         act(l);
