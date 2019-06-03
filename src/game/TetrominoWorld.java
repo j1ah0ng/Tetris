@@ -23,13 +23,14 @@ public class TetrominoWorld extends World {
     }
 
     // Blank block image
-    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/ux0.png");
+    public static final Image BLANK_SQUARE = new Image("file:assets/blocks/32ux0.png");
 
     // Blank grid
     public static ImageView[][] BLANK_GRID;
 
     // Array of all possible Block types
-    public static final Block[] BLOCKS = {Block.BLOCK_BASE};
+    public static final Block[] BLOCKS = {Block.DARK_RED, Block.GREEN, Block.ORANGE, Block.PURPLE,
+        Block.RED, Block.TURQUOISE, Block.YELLOW};
 
     // Rotation matrix
     public static final int[][] R_MAT =
