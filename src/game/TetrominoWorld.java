@@ -91,7 +91,7 @@ public class TetrominoWorld extends World {
         rowsEliminated = 0;
         gameOver = false;
 
-        initialise();
+        initialize();
     }
 
     public TetrominoWorld(Game game, long delay, long delayAccel) {
@@ -106,7 +106,7 @@ public class TetrominoWorld extends World {
         rowsEliminated = 0;
         gameOver = false;
 
-        initialise();
+        initialize();
     }
 
     public TetrominoWorld(Game game, long delay, long delayAccel, GameMode mode) {
@@ -134,7 +134,7 @@ public class TetrominoWorld extends World {
                 break;
         }
 
-        initialise();
+        initialize();
     }
 
     // Public getter and setter functions
@@ -295,11 +295,7 @@ public class TetrominoWorld extends World {
                 }
                 removeKey(this.right);
             } else if (hasKey(this.done)) {
-                while (!checkCollisions(0, 1)) {
-                    for (ImageView i : fallingBlocks) {
-                        setRowIndex(i, getRowIndex(i) + 1);
-                    }
-                }
+                drop();
                 removeKey(this.done);
             }
         } else {
@@ -415,7 +411,7 @@ public class TetrominoWorld extends World {
     }
 
     /** Fills the board with blank Blocks. */
-    private void initialise() {
+    private void initialize() {
         BLANK_GRID = new ImageView[HEIGHT][WIDTH];
 
         for (int row = 0; row < HEIGHT; ++row) {
