@@ -1,38 +1,27 @@
 package game;
 
-import java.io.File;
-
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -42,7 +31,7 @@ public class Game extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Media media = new Media("file:/C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
+		Media media = new Media("file:///C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
 	    MediaPlayer mp = new MediaPlayer(media); 
 	    mp.play();
 	       
@@ -317,7 +306,6 @@ public class Game extends Application {
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
 		slider.setValue(mp.getVolume());
-		System.out.println(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
