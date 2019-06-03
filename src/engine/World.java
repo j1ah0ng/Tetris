@@ -13,8 +13,8 @@ public abstract class World extends javafx.scene.layout.GridPane {
     // Attributes
     /** Set of all keys awaiting a response. Once a key is acknowledged, it
      * should be removed from the list. */
-    protected HashSet<KeyCode> keys;
-    protected long startTimeMs;   // world start time in ms
+    private HashSet<KeyCode> keys;
+    private long startTimeMs;   // world start time in ms
     private AnimationTimer t;
 
     // Constructor
