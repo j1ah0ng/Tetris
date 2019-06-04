@@ -459,8 +459,8 @@ public class TetrominoWorld extends World {
     }
 
     private void endGame() {
+    	stopGame();
         if (game != null) game.endGame();
-        stop();
         spawnNew = false;
     }
 

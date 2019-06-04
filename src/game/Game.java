@@ -12,6 +12,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,18 +24,44 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Game extends Application {
+	
+	Media media = new Media("file:///C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
+    MediaPlayer mp = new MediaPlayer(media);
+	StackPane regPane = new StackPane();
+	StackPane mPane = new StackPane();
+	StackPane blitzPane = new StackPane();
+	BoxBlur blur = new BoxBlur();
+	Rectangle r = new Rectangle();
+	Text tgameOver = new Text("GAME OVER");
+	
+	Image retry = new Image("file:assets/backgrounds/retry.png");
+	Image retryfilled = new Image("file:assets/backgrounds/retryfilled.png");
 
+	Image home = new Image("file:assets/backgrounds/home.png");
+	Image homefilled = new Image("file:assets/backgrounds/homefilled.png");
+
+	ImageView ivretry = new ImageView(retry);
+	ImageView ivhome = new ImageView(home);
+	
 	@Override
 	public void start(Stage stage) throws Exception {
-		Media media = new Media("file:assets/sound/tetris-classic.mp3");
-	    // MediaPlayer mp = new MediaPlayer(media);
-	    // mp.play();
+	    mp.setVolume(0.5);
+	    mp.play();
+	    mp.setOnEndOfMedia(new Runnable() {
+			@Override
+			public void run() {
+				mp.seek(Duration.ZERO);
+				mp.play();
+			}
+	    });
 	       
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
@@ -53,7 +80,7 @@ public class Game extends Application {
 	    KeyCode kmpdrop2 = KeyCode.P;
 
 		stage.setTitle("Tetris");
-		stage.setResizable(false);
+		stage.setResizable(true);
 
 		int w = 800;
 		int h = 640;
@@ -287,14 +314,18 @@ public class Game extends Application {
 
 		StackPane musicRoot = new StackPane();
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
-		musicRoot.setStyle("-fx-background-color: #000000");
+		Image musicim = new Image("file:assets/backgrounds/musicbackground.jpg");
+		ImageView ivmusic = new ImageView(musicim);
+		ivmusic.setFitWidth(800);
+		ivmusic.setFitHeight(640);
+		musicRoot.getChildren().add(ivmusic);
 
 		// hard to see tetromino cursor on slider so keep default cursor
 
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
-		vbox2.setLayoutX(w / 2 - 100);
-		vbox2.setLayoutY(h / 2 - 100);
+		vbox2.setLayoutX(w / 2 - 0.125*w);
+		vbox2.setLayoutY(h / 2 - 0.16666667*h);
 
 		Text musicTitle = new Text("MUSIC");
 		musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
@@ -306,7 +337,6 @@ public class Game extends Application {
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
-		/*
 		slider.setValue(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
@@ -314,8 +344,6 @@ public class Game extends Application {
 				mp.setVolume(slider.getValue());
 			}
 		});
-		
-		 */
 		
 		vbox2.getChildren().addAll(musicTitle, slider);
 
@@ -440,7 +468,6 @@ public class Game extends Application {
 		iv4.setTranslateY(0.3515625*h);
 
 		// regular mode
-		StackPane regPane = new StackPane();
 		Scene regularScene = new Scene(regPane, w, h, Color.BLACK);
 
 		Image regbg = new Image("file:assets/backgrounds/regularmodebackground.jpg");
@@ -468,7 +495,6 @@ public class Game extends Application {
 		});
 
 		// multiplayer mode
-		StackPane mPane = new StackPane();
 		Scene multiplayerScene = new Scene(mPane, w, h, Color.BLACK);
 
 		Image multbg = new Image("file:assets/backgrounds/2playerbackground.png");
@@ -511,7 +537,6 @@ public class Game extends Application {
 
 
 		// StackPane regPane = new StackPane();
-		StackPane blitzPane = new StackPane();
 
 		Scene blitzScene = new Scene(blitzPane, w, h, Color.BLACK);
 
@@ -579,6 +604,7 @@ public class Game extends Application {
 				iv4.setImage(bindsfilled);
 			}
 		});
+		
 		iv4.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -944,6 +970,119 @@ public class Game extends Application {
 				});
 			}
 		});
+
+		blur.setHeight(50);
+		blur.setWidth(50);
+		blur.setIterations(2);
+		
+		r.setX(400);
+		r.setY(300);
+		r.setWidth(2000);
+		r.setHeight(100);
+		r.setArcWidth(20);
+		r.setArcHeight(20);
+		r.setFill(Color.RED);
+
+		tgameOver.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+
+		tgameOver.setFill(Color.GOLD);
+		
+		ivretry.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivretry.setImage(retryfilled);
+			}
+		});
+
+		ivretry.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivretry.setImage(retry);
+			}
+		});
+		
+		ivhome.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivhome.setImage(homefilled);
+			}
+		});
+
+		ivhome.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivhome.setImage(home);
+			}
+		});
+		
+		ivretry.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (ivretry.getParent().equals(regPane)) {
+					for (int i=0;i<regPane.getChildren().size();i++) {
+						regPane.getChildren().remove(i);
+					}
+					// Create a world of regular gamemode and add it
+					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_NORMAL);
+					regPane.getChildren().addAll(regularWorld);
+					regPane.setAlignment(regularWorld, Pos.CENTER);
+					regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
+					regPane.requestFocus();
+					regularWorld.start();
+				} else if (ivretry.getParent().equals(mPane)) {
+					for (int i=0;i<mPane.getChildren().size();i++) {
+						mPane.getChildren().remove(i);
+					}
+					// Create two multiplayer worlds
+					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_MULTIPLAYER);
+					TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_MULTIPLAYER);
+					
+					mpWorldA.setOpponent(mpWorldB);
+					mpWorldB.setOpponent(mpWorldA);
+
+					// Add them, setting alignment reasonably
+					mPane.getChildren().addAll(mpWorldA, mpWorldB);
+					mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
+					mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
+
+					// Provision an event handler to pass key-events to worlds
+					mPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> {
+						mpWorldA.addKey(e.getCode());
+						mpWorldB.addKey(e.getCode());
+					});
+					mPane.requestFocus();
+					mpWorldA.start();
+					mpWorldB.start();
+				} else {
+					for (int i=0;i<blitzPane.getChildren().size();i++) {
+						blitzPane.getChildren().remove(i);
+					}
+					// Create a blitz world
+					TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_BLITZ);
+
+					// Add them and set alignment
+					blitzPane.getChildren().addAll(blitzWorld);
+					blitzPane.setAlignment(blitzWorld, Pos.CENTER);
+
+					// Provision event handlers
+					blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
+							e -> blitzWorld.addKey(e.getCode()));
+					blitzPane.requestFocus();
+					blitzWorld.start();
+				}
+			}
+		});
+		
+		ivhome.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(s);
+			}
+		});
 		
 		stage.setScene(s);
 		stage.show();
@@ -954,6 +1093,16 @@ public class Game extends Application {
 	}
 	
 	public void endGame() {
-		Platform.exit();
+		mp.stop();
+		regPane.setEffect(blur);
+		mPane.setEffect(blur);
+		blitzPane.setEffect(blur);
+		
+		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+		
+		//^kind of repetitive if u want fix
+		//regPane.remveeffect?fix later
 	}
 }
