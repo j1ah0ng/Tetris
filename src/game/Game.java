@@ -54,6 +54,8 @@ public class Game extends Application {
 
 		stage.setTitle("Tetris");
 		stage.setResizable(false);
+		
+		
 
 		int w = 800;
 		int h = 640;
@@ -454,10 +456,13 @@ public class Game extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 
-				// Create a world of regular gamemode and add it
+				Score regScore = new Score();
+				
+				// Create a world of regular gamemode and add it		
+				
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
-				regPane.getChildren().addAll(regularWorld);
+				regPane.getChildren().addAll(regularWorld, regScore);
 				regPane.setAlignment(regularWorld, Pos.CENTER);
 				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
 
