@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
 
 /**
  * <PRE>
- * The TetrominoWorld.java class extends World and creates the raw Tetris game itself. TetrominoWorld handles all the spawns,
+ * The TetrominoWorld.java class extends World and creates the raw Tetris game through a GridPane. TetrominoWorld handles all the spawns,
  * collisions, functionalities, rotations, binds, and etc. for the Tetris game. The class also builds the Tetromino shapes
  * itself. 
  * 
@@ -518,9 +518,12 @@ public class TetrominoWorld extends World {
                 (R_MAT[1][0] * point[0]) + (R_MAT[1][1] * point[1])};
     }
 
-    /** Builds a Tetromino from a list of ImageViews of Blocks
+    /**
+     * <PRE>
+     *  Builds a Tetromino from a list of ImageViews of Blocks
      *
      * @param list ArrayList<ImageView> of length 4
+     * </PRE>
      */
     private void buildTetromino(ArrayList<ImageView> list, int r) {
 
@@ -591,6 +594,15 @@ public class TetrominoWorld extends World {
         this.fallingBlocks = new ArrayList<ImageView>();
     }
 
+    /**
+     * <PRE>
+     * Checks whether there is a collision at the coordinates x,y.
+     * 
+     * @param x represents the coordinate x in pixels
+     * @param y represents the coordinate y in pixels
+     * @return returns the flag
+     * </PRE>
+     */
     private boolean checkCollisions(int x, int y) {
         boolean flag = false;
         for (ImageView view : fallingBlocks) {
@@ -614,6 +626,9 @@ public class TetrominoWorld extends World {
         return flag;
     }
 
+    /**
+     * Moves the falling tetromino blocks down one block.
+     */
     private void moveDown() {
 
         if (!checkCollisions(0, 1)) {
@@ -625,12 +640,19 @@ public class TetrominoWorld extends World {
         spawnNew = checkCollisions(0, 1);
     }
 
+    /**
+     * Ends the game.
+     */
     private void endGame() {
         if (game != null) game.endGame();
         stop();
         spawnNew = false;
     }
+    
 
+    /**
+     * Handles the spawning of tetromino blocks by building the blocks and spawning them onto the tetris grid.
+     */
     private void handleSpawn() {
         // Make the currently falling block the next one
         fallingBlocks = nextBlocks;
@@ -676,6 +698,13 @@ public class TetrominoWorld extends World {
     }
 
     // Enables next block
+    
+    /**
+     * <PRE>
+     * Finds the next Tetromino block that is being spawned.
+     * @return Returns the next tetromino block being spawned.
+     * </PRE>
+     */
     private GridPane getNextTetromino() {
         GridPane upcoming = new GridPane();
 
@@ -728,7 +757,17 @@ public class TetrominoWorld extends World {
     }
 
     // Handle multiplayer
+    /**
+     * <PRE>
+     * Gets the number of rows eliminated.
+     * @return returns number of rows eliminated.
+     * </PRE>
+     */
     public int getRowsEliminated() { return rowsEliminated; }
+    
+    /**
+     * Drops the current tetromino blocks on the enemy's screen if there is a row eliminated.
+     */
     private void mpAct() {
         if (rowsEliminated > 0) {
             if (hasKey(this.mpDrop)) {
@@ -742,12 +781,18 @@ public class TetrominoWorld extends World {
         }
     }
 
+    /**
+     * Drops the current tetromino blocks on the screen to the bottom.
+     */
     public void drop() {
         while (!checkCollisions(0, 1)) {
             moveDown();
         }
     }
 
+    /**
+     * Initiates the frenzy attack.
+     */
     public void beginFrenzy() {
         // Stop the world timer
         stop();
@@ -765,6 +810,13 @@ public class TetrominoWorld extends World {
         frenzyTimer.start();
     }
 
+    /**
+     * <PRE>
+     * Handles the frenzy's delay and timer.
+     * @param l represents the time in long
+     * @param timer represents the timer.
+     * </PRE>
+     */
     private void handleFrenzy(long l, AnimationTimer timer) {
         if (frenzyStartTimeNs + FRENZY_LENGTH_NS <= l) {
             delay *= FRENZY_SPEED_SCALAR;
