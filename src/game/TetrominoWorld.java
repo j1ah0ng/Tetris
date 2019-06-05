@@ -40,7 +40,7 @@ public class TetrominoWorld extends World {
     // Grid width
     public static final int WIDTH = 12;
     // Grid height
-    public static final int HEIGHT = 18;
+    public static final int HEIGHT = 20;
 
     /* End static types */
 
@@ -465,13 +465,6 @@ public class TetrominoWorld extends World {
         }
         spawnNew = false;
     }
-
-    
-	//game.regPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
-	//game.mPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
-	//game.blitzPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
-
-    
     
     private void handleSpawn() {
         // Make the currently falling block the next one

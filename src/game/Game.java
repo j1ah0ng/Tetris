@@ -493,6 +493,7 @@ public class Game extends Application {
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
 				regPane.getChildren().addAll(regularWorld);
+				regularWorld.setAlignment(Pos.BASELINE_CENTER);
 				regPane.setAlignment(regularWorld, Pos.CENTER);
 				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
 
@@ -530,6 +531,9 @@ public class Game extends Application {
 
 				// Add them, setting alignment reasonably
 				mPane.getChildren().addAll(mpWorldA, mpWorldB);
+				mpWorldA.setAlignment(Pos.BASELINE_LEFT);
+				mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
+
 				mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
 				mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
 
@@ -572,7 +576,8 @@ public class Game extends Application {
 
 				// Add them and set alignment
 				blitzPane.getChildren().addAll(blitzWorld);
-				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
+				blitzWorld.setAlignment(Pos.BASELINE_CENTER);
+				//blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
 				// Provision event handlers
 				blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
@@ -1053,6 +1058,7 @@ public class Game extends Application {
 					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_NORMAL);
 					regPane.getChildren().addAll(regularWorld);
+					regularWorld.setAlignment(Pos.BASELINE_CENTER);
 					regPane.setAlignment(regularWorld, Pos.CENTER);
 					regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
 					regPane.requestFocus();
@@ -1074,6 +1080,9 @@ public class Game extends Application {
 
 					// Add them, setting alignment reasonably
 					mPane.getChildren().addAll(mpWorldA, mpWorldB);
+					mpWorldA.setAlignment(Pos.BASELINE_LEFT);
+					mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
+
 					mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
 					mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
 
@@ -1096,6 +1105,7 @@ public class Game extends Application {
 
 					// Add them and set alignment
 					blitzPane.getChildren().addAll(blitzWorld);
+					blitzWorld.setAlignment(Pos.BASELINE_CENTER);
 					blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
 					// Provision event handlers
@@ -1140,11 +1150,5 @@ public class Game extends Application {
     		}
     		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
     	}
-		//regPane.setEffect(blur);
-		//mPane.setEffect(blur);
-		//blitzPane.setEffect(blur);
-		
-		//^kind of repetitive if u want fix
-		//regPane.remveeffect?fix later
 	}
 }
