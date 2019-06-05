@@ -19,20 +19,18 @@ import javafx.scene.layout.GridPane;
  * collisions, functionalities, rotations, binds, and etc. for the Tetris game. The class also builds the Tetromino shapes
  * itself. 
  * 
- * @author Ryan
+ * @author Jiahong Long
  *</PRE>
  */
 public class TetrominoWorld extends World {
 
     /* Begin static types */
 
-    // Gamemode enum
-	
 	/**
 	 * <PRE>
 	 * The enums of the three different game modes to depict which TetrominoWorld is going to run.
 	 * 
-	 * @author Ryan
+	 * @author Jiahong Long
 	 * </PRE>
 	 */
     public static enum GameMode {
@@ -113,6 +111,10 @@ public class TetrominoWorld extends World {
     private boolean gameOver;
     /** A Game attribute representing the Game.java class. */
     private Game game;
+    /** Current score, as a type long */
+    private long score;
+    /** Score object to deal with GUI representation of the score */
+    private Score scoreText;
 
     /** An ArrayList of ImageView objects that represent the set of falling blocks. */
     private ArrayList<ImageView> fallingBlocks; 
@@ -214,6 +216,12 @@ public class TetrominoWorld extends World {
     }
 
     // Public getter and setter functions
+    /**
+     * Sets the Score object that this World updates every tick
+     * @param score Score object to update
+     */
+
+    public void setScoreText(Score scoreText) { this.scoreText = scoreText; }
     /** 
      * <PRE>
      * Sets the opponent TetrominoWorld.
@@ -270,7 +278,9 @@ public class TetrominoWorld extends World {
      * </PRE>
      */
     public void setMPDrop(KeyCode k) { this.mpDrop = k; }
-    /** 
+    /** Gets the score object */
+    public Score getScoreText() { return this.scoreText; }
+    /**
      * <PRE>
      * Gets the left keycode.
      * </PRE>
@@ -344,6 +354,9 @@ public class TetrominoWorld extends World {
             } else {
 
                 if (fallingBlocks.size() == 0) {        // Deal with first run scenario
+                    // Reset score
+                    if (scoreText != null) scoreText.setScore(0);
+
                     // Randomise block appearance
                     int blockType = (int) (Math.random() * BLOCKS.length);
                     fallingBlocks = new ArrayList<ImageView>();
@@ -368,6 +381,7 @@ public class TetrominoWorld extends World {
                 }
 
                 else {
+                    addScore(1);
                     handleSpawn();
                 }
             }
@@ -390,7 +404,7 @@ public class TetrominoWorld extends World {
                     xZero += GridPane.getColumnIndex(i);
                     yZero += GridPane.getRowIndex(i);
                 }
-                xZero /= 4;
+                xZero /= 4;     // Div by 4 for averages
                 yZero /= 4;
 
                 // Translate blocks to points about origin
@@ -483,6 +497,7 @@ public class TetrominoWorld extends World {
                 // Check each row.
                 if (rows[i] >= WIDTH) {
                     ++rowsEliminated;
+                    addScore(10);
                     // Move everything under it down and everything in it away.
                     Iterator<Node> iter = getChildren().iterator();
                     while (iter.hasNext()) {
@@ -580,7 +595,7 @@ public class TetrominoWorld extends World {
         }
     }
 
-    /** Fills the board with blank Blocks. */
+    /** Fills the board with blank Blocks and deals with first-run game setup. */
     private void initialize() {
         BLANK_GRID = new ImageView[HEIGHT][WIDTH];
 
@@ -592,15 +607,18 @@ public class TetrominoWorld extends World {
         }
 
         this.fallingBlocks = new ArrayList<ImageView>();
+
+        score = 0;
     }
 
     /**
      * <PRE>
-     * Checks whether there is a collision at the coordinates x,y.
+     * Checks whether moving the current set of falling blocks down by y blocks and right by x
+     * blocks will result in a collision
      * 
-     * @param x represents the coordinate x in pixels
-     * @param y represents the coordinate y in pixels
-     * @return returns the flag
+     * @param x x-axis offset, with positive to the right
+     * @param y y-axis offset, with positive down
+     * @return whether this move will result in a collision
      * </PRE>
      */
     private boolean checkCollisions(int x, int y) {
@@ -697,8 +715,12 @@ public class TetrominoWorld extends World {
         spawnNew = false;
     }
 
-    // Enables next block
-    
+    /** Updates the stored Score object whenever the score is updated.*/
+    private void addScore(long add) {
+        this.score += add;
+        if (scoreText != null) scoreText.setScore((int) score);
+    }
+
     /**
      * <PRE>
      * Finds the next Tetromino block that is being spawned.
@@ -764,7 +786,7 @@ public class TetrominoWorld extends World {
      * </PRE>
      */
     public int getRowsEliminated() { return rowsEliminated; }
-    
+
     /**
      * Drops the current tetromino blocks on the enemy's screen if there is a row eliminated.
      */

@@ -33,8 +33,8 @@ import javafx.util.Duration;
 
 public class Game extends Application {
 	
-	Media media = new Media("file:///C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
-    MediaPlayer mp = new MediaPlayer(media);
+	Media media = new Media("file:assets/sound/tetris-classic.mp3");
+    // MediaPlayer mp = new MediaPlayer(media);
 	StackPane regPane = new StackPane();
 	StackPane mPane = new StackPane();
 	StackPane blitzPane = new StackPane();
@@ -64,6 +64,7 @@ public class Game extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		/*
 	    mp.setVolume(0.5);
 	    mp.play();
 	    mp.setOnEndOfMedia(new Runnable() {
@@ -73,6 +74,8 @@ public class Game extends Application {
 				mp.play();
 			}
 	    });
+
+		 */
 
 		int w = 800;
 		int h = 640;
@@ -374,11 +377,11 @@ public class Game extends Application {
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
-		slider.setValue(mp.getVolume());
+		// slider.setValue(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				mp.setVolume(slider.getValue());
+				// mp.setVolume(slider.getValue());
 			}
 		});
 		
@@ -538,6 +541,7 @@ public class Game extends Application {
 				regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
 				regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
 
+				regularWorld.setScoreText(score1);
 				regularWorld.start();
 			}
 		});
@@ -601,7 +605,10 @@ public class Game extends Application {
 				mpWorldB.setDone(KeyCode.getKeyCode(tdrop2.getText()));
 				mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
 				mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
-				
+
+				mpWorldA.setScoreText(score1);
+				mpWorldB.setScoreText(score2);
+
 				mpWorldA.start();
 				mpWorldB.start();
 			}
@@ -648,6 +655,7 @@ public class Game extends Application {
 				blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
 				blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
 
+				blitzWorld.setScoreText(score1);
 				blitzWorld.start();
 			}
 		});
@@ -1259,7 +1267,7 @@ public class Game extends Application {
 	}
 	
 	public void endGame() {
-		mp.stop();
+		// mp.stop();
 		Score scoreTemp = new Score();
     	if(isregular==true) {
     		for (int i=0;i<regPane.getChildren().size();i++) {
