@@ -460,10 +460,19 @@ public class TetrominoWorld extends World {
 
     private void endGame() {
     	stopGame();
-        if (game != null) game.endGame();
+        if (game != null) {
+        	game.endGame();
+        }
         spawnNew = false;
     }
 
+    
+	//game.regPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
+	//game.mPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
+	//game.blitzPane.getChildren().addAll(game.r, game.tgameOver, game.ivretry, game.ivhome);
+
+    
+    
     private void handleSpawn() {
         // Make the currently falling block the next one
         fallingBlocks = nextBlocks;

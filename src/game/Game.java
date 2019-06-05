@@ -42,14 +42,18 @@ public class Game extends Application {
 	Rectangle r = new Rectangle();
 	Text tgameOver = new Text("GAME OVER");
 	
-	Image retry = new Image("file:assets/backgrounds/retry.png");
+	Image retry = new Image("file:assets/backgrounds/retryred.png");
 	Image retryfilled = new Image("file:assets/backgrounds/retryfilled.png");
 
-	Image home = new Image("file:assets/backgrounds/home.png");
+	Image home = new Image("file:assets/backgrounds/homered.png");
 	Image homefilled = new Image("file:assets/backgrounds/homefilled.png");
 
 	ImageView ivretry = new ImageView(retry);
 	ImageView ivhome = new ImageView(home);
+	
+	boolean isregular = false;
+	boolean ismultiplayer = false;
+	boolean isblitz = false;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -439,6 +443,7 @@ public class Game extends Application {
 		// Start menu scene
 
 		StackPane root = new StackPane();
+		
 		Scene s = new Scene(root, w, h, Color.BLACK);
 
 		Image bg = new Image("file:assets/backgrounds/tetrisstartmenu2.png");
@@ -482,6 +487,9 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create a world of regular gamemode and add it
+				isregular=true;
+				ismultiplayer=false;
+				isblitz=false;
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
 				regPane.getChildren().addAll(regularWorld);
@@ -510,6 +518,9 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create two multiplayer worlds
+				isregular=false;
+				ismultiplayer=true;
+				isblitz=false;
 				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
 				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
@@ -553,6 +564,9 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create a blitz world
+				isregular=false;
+				ismultiplayer=false;
+				isblitz=true;
 				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_BLITZ);
 
@@ -970,22 +984,34 @@ public class Game extends Application {
 				});
 			}
 		});
-
+		
 		blur.setHeight(50);
 		blur.setWidth(50);
 		blur.setIterations(2);
-		
-		r.setX(400);
-		r.setY(300);
-		r.setWidth(2000);
-		r.setHeight(100);
-		r.setArcWidth(20);
-		r.setArcHeight(20);
+
+		r.setWidth(w/3);
+		r.setHeight(h/3);
+		r.setX((w/2) + w/6);
+		r.setY((h/2) + h/6);
+		r.setArcWidth(30);
+		r.setArcHeight(30);
 		r.setFill(Color.RED);
 
 		tgameOver.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
-
+		tgameOver.setTranslateY(-1*h/10);
 		tgameOver.setFill(Color.GOLD);
+
+		ivretry.setTranslateX(-1*w/12);
+		ivhome.setTranslateX(w/12);
+		
+		ivretry.setTranslateY(h/9);
+		ivhome.setTranslateY(h/9);
+		
+		ivretry.setPreserveRatio(true);
+		ivhome.setPreserveRatio(true);
+		
+		ivretry.setFitWidth(w/7.5);
+		ivhome.setFitWidth(w/7.5);
 		
 		ivretry.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
@@ -1019,9 +1045,10 @@ public class Game extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				if (ivretry.getParent().equals(regPane)) {
-					for (int i=0;i<regPane.getChildren().size();i++) {
+					for (int i=regPane.getChildren().size()-1;i>=1;i--) {
 						regPane.getChildren().remove(i);
 					}
+					regPane.getChildren().get(0).setEffect(null);
 					// Create a world of regular gamemode and add it
 					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_NORMAL);
@@ -1031,9 +1058,11 @@ public class Game extends Application {
 					regPane.requestFocus();
 					regularWorld.start();
 				} else if (ivretry.getParent().equals(mPane)) {
-					for (int i=0;i<mPane.getChildren().size();i++) {
+					for (int i=mPane.getChildren().size()-1;i>=1;i--) {
 						mPane.getChildren().remove(i);
 					}
+					mPane.getChildren().get(0).setEffect(null);
+
 					// Create two multiplayer worlds
 					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_MULTIPLAYER);
@@ -1057,9 +1086,10 @@ public class Game extends Application {
 					mpWorldA.start();
 					mpWorldB.start();
 				} else {
-					for (int i=0;i<blitzPane.getChildren().size();i++) {
+					for (int i=blitzPane.getChildren().size()-1;i>=1;i--) {
 						blitzPane.getChildren().remove(i);
-					}
+					}			
+					blitzPane.getChildren().get(0).setEffect(null);
 					// Create a blitz world
 					TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_BLITZ);
@@ -1083,7 +1113,7 @@ public class Game extends Application {
 				stage.setScene(s);
 			}
 		});
-		
+	
 		stage.setScene(s);
 		stage.show();
 	}
@@ -1094,13 +1124,25 @@ public class Game extends Application {
 	
 	public void endGame() {
 		mp.stop();
-		regPane.setEffect(blur);
-		mPane.setEffect(blur);
-		blitzPane.setEffect(blur);
-		
-		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
-		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
-		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    	if(isregular==true) {
+    		for (int i=0;i<regPane.getChildren().size();i++) {
+    			regPane.getChildren().get(i).setEffect(blur);
+    		}
+    		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    	} else if (ismultiplayer==true) {
+    		for (int i=0;i<mPane.getChildren().size();i++) {
+    			mPane.getChildren().get(i).setEffect(blur);
+    		}  
+    		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    	} else if (isblitz==true) {
+    		for (int i=0;i<blitzPane.getChildren().size();i++) {
+    			blitzPane.getChildren().get(i).setEffect(blur);
+    		}
+    		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    	}
+		//regPane.setEffect(blur);
+		//mPane.setEffect(blur);
+		//blitzPane.setEffect(blur);
 		
 		//^kind of repetitive if u want fix
 		//regPane.remveeffect?fix later
