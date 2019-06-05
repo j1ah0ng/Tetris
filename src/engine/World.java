@@ -27,7 +27,9 @@ public abstract class World extends javafx.scene.layout.GridPane {
     private HashSet<KeyCode> keys;
     private long startTimeMs;   // world start time in ms
     private AnimationTimer t;
-
+    
+    public void stopGame() { t.stop(); }
+    
     // Constructor
     /**
      * Default constructor that creates a new world when called. Initializes keys and sets a timer.

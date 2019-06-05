@@ -12,6 +12,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,43 +24,60 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-
-/**
- * <PRE>
- * 
- * The Game.java class specifically handles the GUI of our Tetris arcade game. The Game.java class uses many JavaFX features as seen 
- * through the large amount of JavaFX imports. The class is very necessary to our game as there wouldn't be any display without it. 
- * The class comes with a start method that handles all of the user's input by tracking through keys pressed and mouse movement, an endGame
- * method that ends the game when called, and a main method that launches the game.
- * 
- * @author Ryan
- * </PRE>
- */
 public class Game extends Application {
+	
+	Media media = new Media("file:///C:/Users/pc/Desktop/Tetris/assets/sound/tetris-classic.mp3");
+    MediaPlayer mp = new MediaPlayer(media);
+	StackPane regPane = new StackPane();
+	StackPane mPane = new StackPane();
+	StackPane blitzPane = new StackPane();
+	BoxBlur blur = new BoxBlur();
+	Rectangle r = new Rectangle();
+	Text tgameOver = new Text("GAME OVER");
+	
+	Image retry = new Image("file:assets/backgrounds/retryred.png");
+	Image retryfilled = new Image("file:assets/backgrounds/retryfilled.png");
 
-	/**
-	 * <PRE>
-	 * 
-	 * The start method for the Game.java class is a method which displays the GUI. The start method is an extension of the 
-	 * JavaFX feature. This method reads the user's input through EventHandlers, specifically MouseEvent.
-	 * The three MouseEvents that we kept track of were setOnMouseClicked, setOnMouseExited, setOnMouseEntered.
-	 * 
-	 * 
-	 * @param stage The stage which pops up when Game.java is ran that displays the GUI.
-	 * 
-	 * </PRE>
-	 */
+	Image home = new Image("file:assets/backgrounds/homered.png");
+	Image homefilled = new Image("file:assets/backgrounds/homefilled.png");
+
+	ImageView ivretry = new ImageView(retry);
+	ImageView ivhome = new ImageView(home);
+	
+	boolean isregular = false;
+	boolean ismultiplayer = false;
+	boolean isblitz = false;
+	
+	Text player1wins;
+	Text player2wins;
+	Text tie;
+	Text scoreText;
+	Score score1;
+	Score score2;
+	
 	@Override
 	public void start(Stage stage) throws Exception {
-		Media media = new Media("file:assets/sound/tetris-classic.mp3");
-	    // MediaPlayer mp = new MediaPlayer(media);
-	    // mp.play();
-	       
+	    mp.setVolume(0.5);
+	    mp.play();
+	    mp.setOnEndOfMedia(new Runnable() {
+			@Override
+			public void run() {
+				mp.seek(Duration.ZERO);
+				mp.play();
+			}
+	    });
+
+		int w = 800;
+		int h = 640;
+		
+	    //default keycodes
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
 	    KeyCode kleft = KeyCode.A;
@@ -76,11 +94,35 @@ public class Game extends Application {
 	    KeyCode kmpfrenzy2 = KeyCode.O;
 	    KeyCode kmpdrop2 = KeyCode.P;
 
-		stage.setTitle("Tetris");
-		stage.setResizable(false);
+	    player1wins = new Text("PLAYER 1 WINS");
+		player2wins = new Text("PLAYER 2 WINS");
+		tie = new Text ("TIE");
+		
+	    player1wins.setFill(Color.GOLD);
+	    player2wins.setFill(Color.GOLD);
+	    tie.setFill(Color.GOLD);
 
-		int w = 800;
-		int h = 640;
+		player1wins.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+		player2wins.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+		tie.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+
+		player1wins.setTranslateY(-1*h/10);
+		player2wins.setTranslateY(-1*h/10);
+		tie.setTranslateY(-1*h/10);
+		
+	    scoreText = new Text("SCORE");
+	    score1 = new Score(); //score of player1
+	    score2 = new Score(); //score player2 (if needed)
+	    
+	    scoreText.setFill(Color.GOLD);
+		scoreText.setFont(new Font("Chewy", 25));
+		score1.setTranslateX(-270);
+		score1.setTranslateY(-160);
+		scoreText.setTranslateX(-270);
+		scoreText.setTranslateY(-210);
+		
+		stage.setTitle("Tetris");
+		stage.setResizable(true);
 
 		Image backLogo = new Image("file:assets/backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
@@ -124,7 +166,7 @@ public class Game extends Application {
 		vbox1.setLayoutY(-h);
 
 		Text bindTitle = new Text("BINDS");
-		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
+		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 75));
 		bindTitle.setFill(Color.GOLD);
 
 		vbox1.getChildren().add(bindTitle);
@@ -302,8 +344,6 @@ public class Game extends Application {
 		tmpfrenzy2.setTranslateY(0.3203125*h);
 		tmpdrop2.setTranslateY(0.4375*h);
 		
-		
-				
 		bindsRoot.getChildren().addAll(tdown, tright, tleft, trotate, tdrop, tmpfrenzy, tmpdrop, 
 				tdown2, tright2, tleft2, trotate2, tdrop2, tmpfrenzy2, tmpdrop2);
 		
@@ -311,14 +351,18 @@ public class Game extends Application {
 
 		StackPane musicRoot = new StackPane();
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
-		musicRoot.setStyle("-fx-background-color: #000000");
+		Image musicim = new Image("file:assets/backgrounds/musicbackground.jpg");
+		ImageView ivmusic = new ImageView(musicim);
+		ivmusic.setFitWidth(800);
+		ivmusic.setFitHeight(640);
+		musicRoot.getChildren().add(ivmusic);
 
 		// hard to see tetromino cursor on slider so keep default cursor
 
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
-		vbox2.setLayoutX(w / 2 - 100);
-		vbox2.setLayoutY(h / 2 - 100);
+		vbox2.setLayoutX(w / 2 - 0.125*w);
+		vbox2.setLayoutY(h / 2 - 0.16666667*h);
 
 		Text musicTitle = new Text("MUSIC");
 		musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
@@ -330,7 +374,6 @@ public class Game extends Application {
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
-		/*
 		slider.setValue(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
@@ -338,8 +381,6 @@ public class Game extends Application {
 				mp.setVolume(slider.getValue());
 			}
 		});
-		
-		 */
 		
 		vbox2.getChildren().addAll(musicTitle, slider);
 
@@ -435,6 +476,7 @@ public class Game extends Application {
 		// Start menu scene
 
 		StackPane root = new StackPane();
+		
 		Scene s = new Scene(root, w, h, Color.BLACK);
 
 		Image bg = new Image("file:assets/backgrounds/tetrisstartmenu2.png");
@@ -464,7 +506,6 @@ public class Game extends Application {
 		iv4.setTranslateY(0.3515625*h);
 
 		// regular mode
-		StackPane regPane = new StackPane();
 		Scene regularScene = new Scene(regPane, w, h, Color.BLACK);
 
 		Image regbg = new Image("file:assets/backgrounds/regularmodebackground.jpg");
@@ -479,20 +520,29 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create a world of regular gamemode and add it
+				isregular=true;
+				ismultiplayer=false;
+				isblitz=false;
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
-				regPane.getChildren().addAll(regularWorld);
+				regPane.getChildren().addAll(regularWorld, scoreText, score1);
+				regularWorld.setAlignment(Pos.BASELINE_CENTER);
 				regPane.setAlignment(regularWorld, Pos.CENTER);
 				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
 
 				stage.setScene(regularScene);
 				regPane.requestFocus();
+				regularWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				regularWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+				regularWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+				regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+				regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+
 				regularWorld.start();
 			}
 		});
 
 		// multiplayer mode
-		StackPane mPane = new StackPane();
 		Scene multiplayerScene = new Scene(mPane, w, h, Color.BLACK);
 
 		Image multbg = new Image("file:assets/backgrounds/2playerbackground.png");
@@ -508,6 +558,9 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create two multiplayer worlds
+				isregular=false;
+				ismultiplayer=true;
+				isblitz=false;
 				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
 				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
@@ -516,7 +569,12 @@ public class Game extends Application {
 				mpWorldB.setOpponent(mpWorldA);
 
 				// Add them, setting alignment reasonably
-				mPane.getChildren().addAll(mpWorldA, mpWorldB);
+				score1.setTranslateY(-h);	
+				score2.setTranslateY(-h);
+				mPane.getChildren().addAll(mpWorldA, mpWorldB, score1, score2);
+				mpWorldA.setAlignment(Pos.BASELINE_LEFT);
+				mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
+
 				mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
 				mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
 
@@ -528,6 +586,22 @@ public class Game extends Application {
 
 				stage.setScene(multiplayerScene);
 				mPane.requestFocus();
+				mpWorldA.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				mpWorldA.setRight(KeyCode.getKeyCode(tright.getText()));
+				mpWorldA.setDown(KeyCode.getKeyCode(tdown.getText()));
+				mpWorldA.setRot(KeyCode.getKeyCode(trotate.getText()));
+				mpWorldA.setDone(KeyCode.getKeyCode(tdrop.getText()));
+				mpWorldA.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy.getText()));
+				mpWorldA.setMPDrop(KeyCode.getKeyCode(tmpdrop.getText()));
+				
+				mpWorldB.setLeft(KeyCode.getKeyCode(tleft2.getText()));
+				mpWorldB.setRight(KeyCode.getKeyCode(tright2.getText()));
+				mpWorldB.setDown(KeyCode.getKeyCode(tdown2.getText()));
+				mpWorldB.setRot(KeyCode.getKeyCode(trotate2.getText()));
+				mpWorldB.setDone(KeyCode.getKeyCode(tdrop2.getText()));
+				mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
+				mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
+				
 				mpWorldA.start();
 				mpWorldB.start();
 			}
@@ -535,7 +609,6 @@ public class Game extends Application {
 
 
 		// StackPane regPane = new StackPane();
-		StackPane blitzPane = new StackPane();
 
 		Scene blitzScene = new Scene(blitzPane, w, h, Color.BLACK);
 
@@ -552,11 +625,15 @@ public class Game extends Application {
 			public void handle(MouseEvent event) {
 
 				// Create a blitz world
+				isregular=false;
+				ismultiplayer=false;
+				isblitz=true;
 				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_BLITZ);
 
 				// Add them and set alignment
-				blitzPane.getChildren().addAll(blitzWorld);
+				blitzPane.getChildren().addAll(blitzWorld, scoreText, score1);
+				blitzWorld.setAlignment(Pos.BASELINE_CENTER);
 				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
 				// Provision event handlers
@@ -565,6 +642,12 @@ public class Game extends Application {
 
 				stage.setScene(blitzScene);
 				blitzPane.requestFocus();
+				blitzWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				blitzWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+				blitzWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+				blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+				blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+
 				blitzWorld.start();
 			}
 		});
@@ -603,6 +686,7 @@ public class Game extends Application {
 				iv4.setImage(bindsfilled);
 			}
 		});
+		
 		iv4.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -969,50 +1053,240 @@ public class Game extends Application {
 			}
 		});
 		
+		blur.setHeight(50);
+		blur.setWidth(50);
+		blur.setIterations(2);
+
+		r.setWidth(w/3);
+		r.setHeight(h/3);
+		r.setX((w/2) + w/6);
+		r.setY((h/2) + h/6);
+		r.setArcWidth(30);
+		r.setArcHeight(30);
+		r.setFill(Color.RED);
+
+		tgameOver.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+		tgameOver.setTranslateY(-1*h/10);
+		tgameOver.setFill(Color.GOLD);
+
+		ivretry.setTranslateX(-1*w/12);
+		ivhome.setTranslateX(w/12);
+		
+		ivretry.setTranslateY(h/9);
+		ivhome.setTranslateY(h/9);
+		
+		ivretry.setPreserveRatio(true);
+		ivhome.setPreserveRatio(true);
+		
+		ivretry.setFitWidth(w/7.5);
+		ivhome.setFitWidth(w/7.5);
+		
+		ivretry.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivretry.setImage(retryfilled);
+			}
+		});
+
+		ivretry.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivretry.setImage(retry);
+			}
+		});
+		
+		ivhome.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivhome.setImage(homefilled);
+			}
+		});
+
+		ivhome.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent e) {
+				ivhome.setImage(home);
+			}
+		});
+		
+		ivretry.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (ivretry.getParent().equals(regPane)) {
+					for (int i=regPane.getChildren().size()-1;i>=1;i--) {
+						regPane.getChildren().remove(i);
+					}
+					regPane.getChildren().get(0).setEffect(null);
+					
+					scoreText = new Text("SCORE");
+				    score1 = new Score();
+				    scoreText.setFill(Color.GOLD);
+					scoreText.setFont(new Font("Chewy", 25));
+					score1.setTranslateX(-0.3375*w);
+					score1.setTranslateY(-0.25*h);
+					scoreText.setTranslateX(-0.3375*w);
+					scoreText.setTranslateY(-0.328125*h);
+					regPane.getChildren().addAll(score1, scoreText);
+					
+					// Create a world of regular gamemode and add it
+					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_NORMAL);
+					regPane.getChildren().addAll(regularWorld);
+					regularWorld.setAlignment(Pos.BASELINE_CENTER);
+					regPane.setAlignment(regularWorld, Pos.CENTER);
+					regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
+					regPane.requestFocus();
+					regularWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					regularWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+					regularWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+					regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+					regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+					regularWorld.start();
+				} else if (ivretry.getParent().equals(mPane)) {
+					for (int i=mPane.getChildren().size()-1;i>=1;i--) {
+						mPane.getChildren().remove(i);
+					}
+					mPane.getChildren().get(0).setEffect(null);
+
+				    score1 = new Score();
+				    score2 = new Score();
+					score1.setTranslateY(-h);
+					score2.setTranslateY(-h);
+										
+					// Create two multiplayer worlds
+					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_MULTIPLAYER);
+					TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_MULTIPLAYER);
+					
+					mpWorldA.setOpponent(mpWorldB);
+					mpWorldB.setOpponent(mpWorldA);
+
+					// Add them, setting alignment reasonably
+					mPane.getChildren().addAll(mpWorldA, mpWorldB, score1, score2);
+					mpWorldA.setAlignment(Pos.BASELINE_LEFT);
+					mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
+
+					mPane.setAlignment(mpWorldA, Pos.CENTER_LEFT);
+					mPane.setAlignment(mpWorldB, Pos.CENTER_RIGHT);
+
+					// Provision an event handler to pass key-events to worlds
+					mPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> {
+						mpWorldA.addKey(e.getCode());
+						mpWorldB.addKey(e.getCode());
+					});
+					mPane.requestFocus();
+					mpWorldA.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					mpWorldA.setRight(KeyCode.getKeyCode(tright.getText()));
+					mpWorldA.setDown(KeyCode.getKeyCode(tdown.getText()));
+					mpWorldA.setRot(KeyCode.getKeyCode(trotate.getText()));
+					mpWorldA.setDone(KeyCode.getKeyCode(tdrop.getText()));
+					mpWorldA.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy.getText()));
+					mpWorldA.setMPDrop(KeyCode.getKeyCode(tmpdrop.getText()));
+					
+					mpWorldB.setLeft(KeyCode.getKeyCode(tleft2.getText()));
+					mpWorldB.setRight(KeyCode.getKeyCode(tright2.getText()));
+					mpWorldB.setDown(KeyCode.getKeyCode(tdown2.getText()));
+					mpWorldB.setRot(KeyCode.getKeyCode(trotate2.getText()));
+					mpWorldB.setDone(KeyCode.getKeyCode(tdrop2.getText()));
+					mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
+					mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
+					
+					mpWorldA.start();
+					mpWorldB.start();
+				} else {
+					for (int i=blitzPane.getChildren().size()-1;i>=1;i--) {
+						blitzPane.getChildren().remove(i);
+					}			
+					blitzPane.getChildren().get(0).setEffect(null);
+					
+					scoreText = new Text("SCORE");
+				    score1 = new Score();
+				    scoreText.setFill(Color.GOLD);
+					scoreText.setFont(new Font("Chewy", 25));
+					score1.setTranslateX(-0.3375*w);
+					score1.setTranslateY(-0.25*h);
+					scoreText.setTranslateX(-0.3375*w);
+					scoreText.setTranslateY(-0.328125*h);
+					blitzPane.getChildren().addAll(score1, scoreText);
+					// Create a blitz world
+					TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+							TetrominoWorld.GameMode.GM_BLITZ);
+
+					// Add them and set alignment
+					blitzPane.getChildren().addAll(blitzWorld);
+					blitzWorld.setAlignment(Pos.BASELINE_CENTER);
+					blitzPane.setAlignment(blitzWorld, Pos.CENTER);
+
+					// Provision event handlers
+					blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
+							e -> blitzWorld.addKey(e.getCode()));
+					blitzPane.requestFocus();
+					blitzWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					blitzWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+					blitzWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+					blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+					blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+					
+					blitzWorld.start();
+				}
+			}
+		});
+		
+		ivhome.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.setScene(s);
+				if(isregular==true) {
+					regPane.getChildren().get(0).setEffect(null);
+		    	} else if (ismultiplayer==true) {
+					mPane.getChildren().get(0).setEffect(null);
+		    	} else if (isblitz==true) {
+					blitzPane.getChildren().get(0).setEffect(null);
+		    	}isregular = false;
+		    	ismultiplayer = false;
+		    	isblitz = false;
+				score1.resetScore();
+				score2.resetScore();
+			}
+		});
 		stage.setScene(s);
 		stage.show();
 	}
 
-	/**
-	 * <PRE>
-	 * The main method launches the game, specifically through the start method, which shows the GUI.
-	 * 
-	 * @param args Contains the supplied command line arguments through an array of strings.
-	 * </PRE>
-	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
-	/**
-	 * <PRE>
-	 * When called, the endGame method immediately stops the game from proceeding.
-	 * </PRE>
-	 */
 	public void endGame() {
-		Platform.exit();
+		mp.stop();
+		Score scoreTemp = new Score();
+    	if(isregular==true) {
+    		for (int i=0;i<regPane.getChildren().size();i++) {
+    			regPane.getChildren().get(i).setEffect(blur);
+    		}
+    		scoreTemp.setScore(score1.getScore());
+    		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
+    	} else if (ismultiplayer==true) {
+    		for (int i=0;i<mPane.getChildren().size();i++) {
+    			mPane.getChildren().get(i).setEffect(blur);
+    		} 
+    		if (score1.getScore()>score2.getScore()) {
+    			scoreTemp.setScore(score1.getScore());
+        		mPane.getChildren().addAll(r, player1wins, ivretry, ivhome, scoreTemp);
+    		} else if (score1.getScore()==score2.getScore()){
+    			scoreTemp.setScore(score1.getScore());
+        		mPane.getChildren().addAll(r, tie, ivretry, ivhome, scoreTemp);
+    		} else {
+    			scoreTemp.setScore(score2.getScore());
+        		mPane.getChildren().addAll(r, player2wins, ivretry, ivhome, scoreTemp);
+    		}
+    	} else if (isblitz==true) {
+    		for (int i=0;i<blitzPane.getChildren().size();i++) {
+    			blitzPane.getChildren().get(i).setEffect(blur);
+    		} 
+    		scoreTemp.setScore(score1.getScore());
+    		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
+    	}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

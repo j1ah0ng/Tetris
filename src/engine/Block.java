@@ -11,13 +11,13 @@ import javafx.scene.image.Image;
  */
 public enum Block {
 
-    DARK_RED("32darkredblock.png"),
-    GREEN("32greenblock.png"),
-    ORANGE("32orangeblock.png"),
-    PURPLE("32purpleblock.png"),
-    RED("32redblock.png"),
-    TURQUOISE("32turquoiseblock.png"),
-    YELLOW("32yellowblock.png") ;
+    DARK_RED("32darkredblock2.png"),
+    GREEN("32greenblock2.png"),
+    ORANGE("32orangeblock2.png"),
+    PURPLE("32purpleblock2.png"),
+    RED("32redblock2.png"),
+    TURQUOISE("32turquoiseblock2.png"),
+    YELLOW("32yellowblock2.png") ;
 
     String filename;
     Image image;
