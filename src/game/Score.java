@@ -1,5 +1,6 @@
 package game;
 
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Score extends javafx.scene.text.Text {
@@ -10,6 +11,7 @@ public class Score extends javafx.scene.text.Text {
     public Score() {
         super();
         score = 0;
+        super.setFill(Color.GOLD);
         super.setFont(new Font("Chewy", 25));
         updateDisplay();
     }
@@ -26,5 +28,8 @@ public class Score extends javafx.scene.text.Text {
         updateDisplay();
     }
 
+    public void resetScore() {
+    	score=0;
+    }
     public int getScore() { return this.score; }
 }

@@ -54,9 +54,11 @@ public class Game extends Application {
 	boolean isregular = false;
 	boolean ismultiplayer = false;
 	boolean isblitz = false;
-	boolean mp1dead = true;
-	boolean mp2dead = true;
-		
+	
+	Text scoreText;
+	Score score1;
+	Score score2;
+	
 	@Override
 	public void start(Stage stage) throws Exception {
 	    mp.setVolume(0.5);
@@ -68,7 +70,8 @@ public class Game extends Application {
 				mp.play();
 			}
 	    });
-	       
+
+	    //default keycodes
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
 	    KeyCode kleft = KeyCode.A;
@@ -85,6 +88,17 @@ public class Game extends Application {
 	    KeyCode kmpfrenzy2 = KeyCode.O;
 	    KeyCode kmpdrop2 = KeyCode.P;
 
+	    scoreText = new Text("SCORE");
+	    score1 = new Score(); //score of player1
+	    score2 = new Score(); //score player2 (if needed)
+	    
+	    scoreText.setFill(Color.GOLD);
+		scoreText.setFont(new Font("Chewy", 25));
+		score1.setTranslateX(-270);
+		score1.setTranslateY(-160);
+		scoreText.setTranslateX(-270);
+		scoreText.setTranslateY(-210);
+		
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
 
@@ -490,11 +504,9 @@ public class Game extends Application {
 				isregular=true;
 				ismultiplayer=false;
 				isblitz=false;
-				mp1dead=true;
-				mp2dead=true;
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
-				regPane.getChildren().addAll(regularWorld);
+				regPane.getChildren().addAll(regularWorld, scoreText, score1);
 				regularWorld.setAlignment(Pos.BASELINE_CENTER);
 				regPane.setAlignment(regularWorld, Pos.CENTER);
 				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
@@ -530,8 +542,6 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=true;
 				isblitz=false;
-				mp1dead=false;
-				mp2dead=false;
 				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
 				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
@@ -540,7 +550,9 @@ public class Game extends Application {
 				mpWorldB.setOpponent(mpWorldA);
 
 				// Add them, setting alignment reasonably
-				mPane.getChildren().addAll(mpWorldA, mpWorldB);
+				score1.setTranslateY(-h);	
+				score2.setTranslateY(-h);
+				mPane.getChildren().addAll(mpWorldA, mpWorldB, score1, score2);
 				mpWorldA.setAlignment(Pos.BASELINE_LEFT);
 				mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
 
@@ -597,13 +609,11 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=false;
 				isblitz=true;
-				mp1dead=true;
-				mp2dead=true;
 				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_BLITZ);
 
 				// Add them and set alignment
-				blitzPane.getChildren().addAll(blitzWorld);
+				blitzPane.getChildren().addAll(blitzWorld, scoreText, score1);
 				blitzWorld.setAlignment(Pos.BASELINE_CENTER);
 				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
@@ -1088,6 +1098,17 @@ public class Game extends Application {
 						regPane.getChildren().remove(i);
 					}
 					regPane.getChildren().get(0).setEffect(null);
+					
+					scoreText = new Text("SCORE");
+				    score1 = new Score();
+				    scoreText.setFill(Color.GOLD);
+					scoreText.setFont(new Font("Chewy", 25));
+					score1.setTranslateX(-0.3375*w);
+					score1.setTranslateY(-0.25*h);
+					scoreText.setTranslateX(-0.3375*w);
+					scoreText.setTranslateY(-0.328125*h);
+					regPane.getChildren().addAll(score1, scoreText);
+					
 					// Create a world of regular gamemode and add it
 					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_NORMAL);
@@ -1107,8 +1128,12 @@ public class Game extends Application {
 						mPane.getChildren().remove(i);
 					}
 					mPane.getChildren().get(0).setEffect(null);
-					mp1dead=true;
-					mp2dead=true;
+
+				    score1 = new Score();
+				    score2 = new Score();
+					score1.setTranslateY(-h);
+					score2.setTranslateY(-h);
+										
 					// Create two multiplayer worlds
 					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_MULTIPLAYER);
@@ -1119,7 +1144,7 @@ public class Game extends Application {
 					mpWorldB.setOpponent(mpWorldA);
 
 					// Add them, setting alignment reasonably
-					mPane.getChildren().addAll(mpWorldA, mpWorldB);
+					mPane.getChildren().addAll(mpWorldA, mpWorldB, score1, score2);
 					mpWorldA.setAlignment(Pos.BASELINE_LEFT);
 					mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
 
@@ -1155,6 +1180,16 @@ public class Game extends Application {
 						blitzPane.getChildren().remove(i);
 					}			
 					blitzPane.getChildren().get(0).setEffect(null);
+					
+					scoreText = new Text("SCORE");
+				    score1 = new Score();
+				    scoreText.setFill(Color.GOLD);
+					scoreText.setFont(new Font("Chewy", 25));
+					score1.setTranslateX(-0.3375*w);
+					score1.setTranslateY(-0.25*h);
+					scoreText.setTranslateX(-0.3375*w);
+					scoreText.setTranslateY(-0.328125*h);
+					blitzPane.getChildren().addAll(score1, scoreText);
 					// Create a blitz world
 					TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_BLITZ);
@@ -1192,11 +1227,10 @@ public class Game extends Application {
 		    	}isregular = false;
 		    	ismultiplayer = false;
 		    	isblitz = false;
-		    	mp1dead=true;
-				mp2dead=true;
+				score1.resetScore();
+				score2.resetScore();
 			}
 		});
-	
 		stage.setScene(s);
 		stage.show();
 	}
@@ -1207,21 +1241,29 @@ public class Game extends Application {
 	
 	public void endGame() {
 		mp.stop();
+		Score scoreTemp = new Score();
     	if(isregular==true) {
     		for (int i=0;i<regPane.getChildren().size();i++) {
     			regPane.getChildren().get(i).setEffect(blur);
     		}
-    		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    		scoreTemp.setScore(score1.getScore());
+    		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	} else if (ismultiplayer==true) {
     		for (int i=0;i<mPane.getChildren().size();i++) {
     			mPane.getChildren().get(i).setEffect(blur);
-    		}  
-    		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    		} 
+    		if (score1.getScore()>=score2.getScore()) {
+    			scoreTemp.setScore(score1.getScore());
+    		} else {
+    			scoreTemp.setScore(score2.getScore());
+    		}
+    		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	} else if (isblitz==true) {
     		for (int i=0;i<blitzPane.getChildren().size();i++) {
     			blitzPane.getChildren().get(i).setEffect(blur);
-    		}
-    		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome);
+    		} 
+    		scoreTemp.setScore(score1.getScore());
+    		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	}
 	}
 }

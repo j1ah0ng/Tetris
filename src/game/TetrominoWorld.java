@@ -323,7 +323,10 @@ public class TetrominoWorld extends World {
                         if (((ImageView)n).getImage().equals(BLANK_SQUARE)) continue;
                         else {
                             int k = getRowIndex(n);
-                            if (k == i) iter.remove();
+                            if (k == i) { 
+                            	game.score1.addScore(10);
+                            	iter.remove();
+                            }
                             else if (k < i) setRowIndex(n, getRowIndex(n) + 1);
                         }
                     }
@@ -448,7 +451,15 @@ public class TetrominoWorld extends World {
     }
 
     private void moveDown() {
-
+    	if (game.mPane.getChildren().contains(game.r)) {
+    		gameOver=true;
+        	for (int i = fallingBlocks.size()-1;i>=1;i--) {
+        		fallingBlocks.remove(fallingBlocks.get(i));
+        	}
+        	stopGame();
+            spawnNew = false;
+            return;
+        }
         if (!checkCollisions(0, 1)) {
             for (ImageView view : fallingBlocks) {
                 // Move blocks down
@@ -497,6 +508,8 @@ public class TetrominoWorld extends World {
             return;
         }
 
+        
+        
         // Create new tetromino for nextBlocks
         int blockType = (int) (Math.random() * BLOCKS.length);
         nextBlocks = new ArrayList<ImageView>();
