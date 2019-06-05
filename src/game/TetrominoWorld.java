@@ -13,72 +13,126 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 
+/**
+ * <PRE>
+ * The TetrominoWorld.java class extends World and creates the raw Tetris game itself. TetrominoWorld handles all the spawns,
+ * collisions, functionalities, rotations, binds, and etc. for the Tetris game. The class also builds the Tetromino shapes
+ * itself. 
+ * 
+ * @author Ryan
+ *</PRE>
+ */
 public class TetrominoWorld extends World {
 
     /* Begin static types */
 
     // Gamemode enum
+	
+	/**
+	 * <PRE>
+	 * The enums of the three different game modes to depict which TetrominoWorld is going to run.
+	 * 
+	 * @author Ryan
+	 * </PRE>
+	 */
     public static enum GameMode {
         GM_MULTIPLAYER, GM_BLITZ, GM_NORMAL
     }
 
     // Blank block image
+    
+    /**  A static final Image attribute that represents the individual blank Tetromino block. */
     public static final Image BLANK_SQUARE = new Image("file:assets/blocks/32ux0.png");
 
     // Blank grid
+    /** A static attribute that represents the grid through a 2-D array of ImageView elements. */
     public static ImageView[][] BLANK_GRID;
 
     // Array of all possible Block types
+    /** A static final attribute that holds an array of all the possible tetromino block colors. */
     public static final Block[] BLOCKS = {Block.DARK_RED, Block.GREEN, Block.ORANGE, Block.PURPLE,
         Block.RED, Block.TURQUOISE, Block.YELLOW};
 
-    // Rotation matrix
+    /** A static final attribute that is a 2-D array of integers that represents a rotation matrix. */
     public static final int[][] R_MAT =
             {{0, -1},
              {1,  0}};
 
-    // Grid width
+    /** A static final attribute that represents the grid's width.  */
     public static final int WIDTH = 12;
-    // Grid height
+    /** A static final attribute that represents the grid's height.  */
     public static final int HEIGHT = 18;
 
     /* End static types */
 
-    // Keycode bindings
+    /** A KeyCode attribute representing a call for a rotation. */
     private KeyCode rotate = KeyCode.R;
+    /** A KeyCode attribute representing a call for down. */
     private KeyCode down = KeyCode.DOWN;
+    /** A KeyCode attribute representing a call for left. */
     private KeyCode left = KeyCode.LEFT;
+    /** A KeyCode attribute representing a call for right. */
     private KeyCode right = KeyCode.RIGHT;
+    /** A KeyCode attribute representing a call for a space. */
     private KeyCode done = KeyCode.SPACE;
 
     // Gamemode flag
+    /** A final boolean attribute that represents whether the current mode is multiplayer. */
     private final boolean MULTIPLAYER;
+    /** A final boolean attribute that represents whether the current mode is blitz. */
     private final boolean BLITZ;
 
     // Data relevant only to blitz mode
+    /** A static final long attribute that keeps track of how long blitz mode is.   */
     private static final long BLITZ_LENGTH_NS = (long)120e9;
-    // Data relevant only to multiplayer mode
+    /** A static final long attribute that keeps track of how long the frenzy period is.   */
     private static final long FRENZY_LENGTH_NS = (long)3e9;
+    /** A static final int attribute that keeps track of how fast the blocks are falling in a frenzy attack.   */
     private static final int FRENZY_SPEED_SCALAR = 3;
+    /** A long attribute that represents the start time for a frenzy attack.  */
     private long frenzyStartTimeNs;
+    /** An int attribute that represents how many rows are currently eliminated.   */
     private int rowsEliminated;
+    /** A TetrominoWorld attribute that represents the opponents Tetris grid. */
     private TetrominoWorld opponent;
-    private KeyCode mpFrenzy = KeyCode.F;      // Placeholder keybinds
-    private KeyCode mpDrop = KeyCode.D;        // until we implement better
+    /** A keycode attribute that represents a call for the F key (initiates frenzy attack).  */
+    private KeyCode mpFrenzy = KeyCode.F;     
+    /** A keycode attribute that represents a call for the D key (initiates drop attack). */
+    private KeyCode mpDrop = KeyCode.D;     
 
     // Attributes
-    private long delay;             // Delay between display updates
-    private long delayAccel;        // d(delay)/dt in seconds per second
-    private long lastRun;           // Last run of act()
-    private boolean spawnNew;       // Whether it should spawn a new block this tick
+    /** A long attribute that represents delay between display updates. */
+    private long delay;           
+    /** A long attribute that represents delay in seconds. */
+    private long delayAccel;     
+    /** A long attribute representing the last run of the act() method. */
+    private long lastRun;      
+    /** A boolean attribute that represents whether a new Tetromino block should be spawned. */
+    private boolean spawnNew;       
+    /** A boolean attribute representing whether the game is over. */
     private boolean gameOver;
+    /** A Game attribute representing the Game.java class. */
     private Game game;
 
-    private ArrayList<ImageView> fallingBlocks; // Current set of falling blocks
-    private ArrayList<ImageView> nextBlocks; // Next set of falling blocks, for preview purposes
-    private int nextTetromino;              // int representing ID of the next falling tetromino
+    /** An ArrayList of ImageView objects that represent the set of falling blocks. */
+    private ArrayList<ImageView> fallingBlocks; 
+    /** An ArrayList of ImageView objects representing the next falling blocks. */
+    private ArrayList<ImageView> nextBlocks; 
+    /** An integer attribute representing the ID of the next falling tetromino. */
+    private int nextTetromino;             
 
     // Constructors
+    
+    /**
+     * <PRE>
+     *A custom constructor that creates a new TetrominoWorld which can be implemented into a Game.java class. 
+     * This constructor initalizes many attributes in accordance to how the game functions at the beginning of it's 
+     * implementation. 
+     * 
+     * @param game Represents the Game.java class (inputed as "this" when used in the Game.java Class)
+     * @param delay represents the grid delay in display updates.
+     * </PRE>
+     */
     public TetrominoWorld(Game game, long delay) {
         super();
         this.game = game;
@@ -93,7 +147,17 @@ public class TetrominoWorld extends World {
 
         initialize();
     }
-
+    /**
+     * <PRE>
+     * A custom constructor that creates a new TetrominoWorld which can be implemented into a Game.java class. 
+     * This constructor initalizes many attributes in accordance to how the game functions at the beginning of it's 
+     * implementation. 
+     * 
+     * @param game Represents the Game.java class (inputed as "this" when used in the Game.java Class).
+     * @param delay Represents the grid delay in display updates.
+     * @param delayAccel Represents the change in the acceleration of the delay in seconds.
+     * </PRE>
+     */
     public TetrominoWorld(Game game, long delay, long delayAccel) {
         super();
         this.game = game;
@@ -109,6 +173,18 @@ public class TetrominoWorld extends World {
         initialize();
     }
 
+    /**
+     * <PRE>
+     * A custom constructor that creates a new TetrominoWorld which can be implemented into a Game.java class. 
+     * This constructor initalizes many attributes in accordance to how the game functions at the beginning of it's 
+     * implementation. 
+     * 
+     * @param game Represents the Game.java class (inputed as "this" when used in the Game.java Class).
+     * @param delay Represents the grid delay in display updates.
+     * @param delayAccel Represents the change in the acceleration of the delay in seconds.
+     * @param mode Represents the specific GameMode the TetrominoWorld is.
+     * </PRE>
+     */
     public TetrominoWorld(Game game, long delay, long delayAccel, GameMode mode) {
         super();
         this.game = game;
@@ -138,24 +214,115 @@ public class TetrominoWorld extends World {
     }
 
     // Public getter and setter functions
+    /** 
+     * <PRE>
+     * Sets the opponent TetrominoWorld.
+     * @param opponent Represents the opponent's TetrominoWorld.
+     * </PRE>
+     */
     public void setOpponent(TetrominoWorld opponent) { this.opponent = opponent; }
-
+    /** 
+     * <PRE>
+     * Sets the left keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setLeft(KeyCode k) { this.left = k; }
+    /** 
+     * <PRE>
+     * Sets the right keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setRight(KeyCode k) { this.right = k; }
+    /** 
+     * <PRE>
+     * Sets the down keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setDown(KeyCode k) { this.down = k; }
+    /** 
+     * <PRE>
+     * Sets the rotation keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setRot(KeyCode k) { this.rotate = k; }
+    /** 
+     * <PRE>
+     * Sets the done keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setDone(KeyCode k) { this.done = k; }
+    /** 
+     * <PRE>
+     * Sets the frenzy keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setMPFrenzy(KeyCode k) { this.mpFrenzy = k; }
+    /** 
+     * <PRE>
+     * Sets the drop keycode.
+     * @param k Represents the keycode.
+     * </PRE>
+     */
     public void setMPDrop(KeyCode k) { this.mpDrop = k; }
+    /** 
+     * <PRE>
+     * Gets the left keycode.
+     * </PRE>
+     */
     public KeyCode getLeft() { return this.left; }
+    /** 
+     * <PRE>
+     * Gets the right keycode.
+     * </PRE>
+     */
     public KeyCode getRight() { return this.right; }
+    /** 
+     * <PRE>
+     * Gets the down keycode.
+     * </PRE>
+     */
     public KeyCode getDown() { return this.down; }
+    /** 
+     * <PRE>
+     * Gets the rotation keycode.
+     * </PRE>
+     */
     public KeyCode getRot() { return this.rotate; }
+    /** 
+     * <PRE>
+     * Gets the done keycode.
+     * </PRE>
+     */
     public KeyCode getDone() { return this.done; }
+    /** 
+     * <PRE>
+     * Gets the frenzy keycode.
+     * </PRE>
+     */
     public KeyCode getMPFrenzy() { return this.mpFrenzy; }
+    /** 
+     * <PRE>
+     * Gets the drop keycode.
+     * </PRE>
+     */
     public KeyCode getMPDrop() { return this.mpDrop; }
 
     // Main loop function
+    
+    /**
+     * <PRE>
+     * The act method is constantly called and has the responsibility of telling the Blocks what to do. The act method
+     * tells the blocks when the game is over, is currently in a collision, is rotating, etc. 
+     * 
+     * @param now represents the current time.
+     * </PRE>
+     */
     @Override
     protected void act(long now) {
 

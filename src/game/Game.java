@@ -28,8 +28,32 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+
+/**
+ * <PRE>
+ * 
+ * The Game.java class specifically handles the GUI of our Tetris arcade game. The Game.java class uses many JavaFX features as seen 
+ * through the large amount of JavaFX imports. The class is very necessary to our game as there wouldn't be any display without it. 
+ * The class comes with a start method that handles all of the user's input by tracking through keys pressed and mouse movement, an endGame
+ * method that ends the game when called, and a main method that launches the game.
+ * 
+ * @author Ryan
+ * </PRE>
+ */
 public class Game extends Application {
 
+	/**
+	 * <PRE>
+	 * 
+	 * The start method for the Game.java class is a method which displays the GUI. The start method is an extension of the 
+	 * JavaFX feature. This method reads the user's input through EventHandlers, specifically MouseEvent.
+	 * The three MouseEvents that we kept track of were setOnMouseClicked, setOnMouseExited, setOnMouseEntered.
+	 * 
+	 * 
+	 * @param stage The stage which pops up when Game.java is ran that displays the GUI.
+	 * 
+	 * </PRE>
+	 */
 	@Override
 	public void start(Stage stage) throws Exception {
 		Media media = new Media("file:assets/sound/tetris-classic.mp3");
@@ -949,11 +973,46 @@ public class Game extends Application {
 		stage.show();
 	}
 
+	/**
+	 * <PRE>
+	 * The main method launches the game, specifically through the start method, which shows the GUI.
+	 * 
+	 * @param args Contains the supplied command line arguments through an array of strings.
+	 * </PRE>
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
+	/**
+	 * <PRE>
+	 * When called, the endGame method immediately stops the game from proceeding.
+	 * </PRE>
+	 */
 	public void endGame() {
 		Platform.exit();
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

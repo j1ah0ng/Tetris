@@ -4,7 +4,13 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-
+/**
+ * <PRE>
+ * The Test.java class is a class which tests the implementation of a TetrominoWorld into a scene.
+ * 
+ * @author Ryan
+ * </PRE>
+ */
 public class Test extends Application {
 
     @Override
@@ -21,7 +27,13 @@ public class Test extends Application {
 
         world.requestFocus();
     }
-
+    /**
+	 * <PRE>
+	 * The main method launches the game, specifically through the start method, which shows the GUI.
+	 * 
+	 * @param args Contains the supplied command line arguments through an array of strings.
+	 * </PRE>
+	 */
     public static void main(String[] args) {
         launch(args);
     }
