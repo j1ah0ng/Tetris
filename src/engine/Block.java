@@ -3,8 +3,11 @@ package engine;
 import javafx.scene.image.Image;
 
 /**
+ * <PRE>
  * Enumeration Block represents all the different Block appearances a Tetromino
  * object can take on. Each discrete Block is represented by a different Image.
+ * 
+ * </PRE>
  */
 public enum Block {
 
@@ -24,9 +27,20 @@ public enum Block {
         this.image = new Image("file:assets/blocks/" + filename);
     }
 
+    /**
+     * <PRE>
+     * Gets the filename.
+     * @return Returns file name.
+     * </PRE>
+     */
     public String getFilename() {
         return filename;
     }
-
+    /**
+     * <PRE>
+     * Gets the image.
+     * @return Returns the image.
+     * </PRE>
+     */
     public Image getImage() { return image; }
 }
