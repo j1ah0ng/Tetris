@@ -54,6 +54,8 @@ public class Game extends Application {
 	boolean isregular = false;
 	boolean ismultiplayer = false;
 	boolean isblitz = false;
+	boolean mp1dead = true;
+	boolean mp2dead = true;
 		
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -488,6 +490,8 @@ public class Game extends Application {
 				isregular=true;
 				ismultiplayer=false;
 				isblitz=false;
+				mp1dead=true;
+				mp2dead=true;
 				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
 				regPane.getChildren().addAll(regularWorld);
@@ -526,6 +530,8 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=true;
 				isblitz=false;
+				mp1dead=false;
+				mp2dead=false;
 				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
 				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
@@ -591,6 +597,8 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=false;
 				isblitz=true;
+				mp1dead=true;
+				mp2dead=true;
 				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_BLITZ);
 
@@ -1088,13 +1096,19 @@ public class Game extends Application {
 					regPane.setAlignment(regularWorld, Pos.CENTER);
 					regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
 					regPane.requestFocus();
+					regularWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					regularWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+					regularWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+					regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+					regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
 					regularWorld.start();
 				} else if (ivretry.getParent().equals(mPane)) {
 					for (int i=mPane.getChildren().size()-1;i>=1;i--) {
 						mPane.getChildren().remove(i);
 					}
 					mPane.getChildren().get(0).setEffect(null);
-
+					mp1dead=true;
+					mp2dead=true;
 					// Create two multiplayer worlds
 					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_MULTIPLAYER);
@@ -1118,6 +1132,22 @@ public class Game extends Application {
 						mpWorldB.addKey(e.getCode());
 					});
 					mPane.requestFocus();
+					mpWorldA.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					mpWorldA.setRight(KeyCode.getKeyCode(tright.getText()));
+					mpWorldA.setDown(KeyCode.getKeyCode(tdown.getText()));
+					mpWorldA.setRot(KeyCode.getKeyCode(trotate.getText()));
+					mpWorldA.setDone(KeyCode.getKeyCode(tdrop.getText()));
+					mpWorldA.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy.getText()));
+					mpWorldA.setMPDrop(KeyCode.getKeyCode(tmpdrop.getText()));
+					
+					mpWorldB.setLeft(KeyCode.getKeyCode(tleft2.getText()));
+					mpWorldB.setRight(KeyCode.getKeyCode(tright2.getText()));
+					mpWorldB.setDown(KeyCode.getKeyCode(tdown2.getText()));
+					mpWorldB.setRot(KeyCode.getKeyCode(trotate2.getText()));
+					mpWorldB.setDone(KeyCode.getKeyCode(tdrop2.getText()));
+					mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
+					mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
+					
 					mpWorldA.start();
 					mpWorldB.start();
 				} else {
@@ -1138,6 +1168,12 @@ public class Game extends Application {
 					blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
 							e -> blitzWorld.addKey(e.getCode()));
 					blitzPane.requestFocus();
+					blitzWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+					blitzWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+					blitzWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+					blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+					blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+					
 					blitzWorld.start();
 				}
 			}
@@ -1156,6 +1192,8 @@ public class Game extends Application {
 		    	}isregular = false;
 		    	ismultiplayer = false;
 		    	isblitz = false;
+		    	mp1dead=true;
+				mp2dead=true;
 			}
 		});
 	
