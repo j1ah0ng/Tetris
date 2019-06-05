@@ -54,7 +54,7 @@ public class Game extends Application {
 	boolean isregular = false;
 	boolean ismultiplayer = false;
 	boolean isblitz = false;
-	
+		
 	@Override
 	public void start(Stage stage) throws Exception {
 	    mp.setVolume(0.5);
@@ -309,8 +309,6 @@ public class Game extends Application {
 		tmpfrenzy2.setTranslateY(0.3203125*h);
 		tmpdrop2.setTranslateY(0.4375*h);
 		
-		
-				
 		bindsRoot.getChildren().addAll(tdown, tright, tleft, trotate, tdrop, tmpfrenzy, tmpdrop, 
 				tdown2, tright2, tleft2, trotate2, tdrop2, tmpfrenzy2, tmpdrop2);
 		
@@ -499,6 +497,12 @@ public class Game extends Application {
 
 				stage.setScene(regularScene);
 				regPane.requestFocus();
+				regularWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				regularWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+				regularWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+				regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+				regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+
 				regularWorld.start();
 			}
 		});
@@ -545,6 +549,22 @@ public class Game extends Application {
 
 				stage.setScene(multiplayerScene);
 				mPane.requestFocus();
+				mpWorldA.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				mpWorldA.setRight(KeyCode.getKeyCode(tright.getText()));
+				mpWorldA.setDown(KeyCode.getKeyCode(tdown.getText()));
+				mpWorldA.setRot(KeyCode.getKeyCode(trotate.getText()));
+				mpWorldA.setDone(KeyCode.getKeyCode(tdrop.getText()));
+				mpWorldA.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy.getText()));
+				mpWorldA.setMPDrop(KeyCode.getKeyCode(tmpdrop.getText()));
+				
+				mpWorldB.setLeft(KeyCode.getKeyCode(tleft2.getText()));
+				mpWorldB.setRight(KeyCode.getKeyCode(tright2.getText()));
+				mpWorldB.setDown(KeyCode.getKeyCode(tdown2.getText()));
+				mpWorldB.setRot(KeyCode.getKeyCode(trotate2.getText()));
+				mpWorldB.setDone(KeyCode.getKeyCode(tdrop2.getText()));
+				mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
+				mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
+				
 				mpWorldA.start();
 				mpWorldB.start();
 			}
@@ -577,7 +597,7 @@ public class Game extends Application {
 				// Add them and set alignment
 				blitzPane.getChildren().addAll(blitzWorld);
 				blitzWorld.setAlignment(Pos.BASELINE_CENTER);
-				//blitzPane.setAlignment(blitzWorld, Pos.CENTER);
+				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
 				// Provision event handlers
 				blitzPane.addEventHandler(KeyEvent.KEY_RELEASED,
@@ -585,6 +605,12 @@ public class Game extends Application {
 
 				stage.setScene(blitzScene);
 				blitzPane.requestFocus();
+				blitzWorld.setLeft(KeyCode.getKeyCode(tleft.getText()));
+				blitzWorld.setRight(KeyCode.getKeyCode(tright.getText()));
+				blitzWorld.setDown(KeyCode.getKeyCode(tdown.getText()));
+				blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
+				blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
+
 				blitzWorld.start();
 			}
 		});
@@ -1121,6 +1147,15 @@ public class Game extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
+				if(isregular==true) {
+					regPane.getChildren().get(0).setEffect(null);
+		    	} else if (ismultiplayer==true) {
+					mPane.getChildren().get(0).setEffect(null);
+		    	} else if (isblitz==true) {
+					blitzPane.getChildren().get(0).setEffect(null);
+		    	}isregular = false;
+		    	ismultiplayer = false;
+		    	isblitz = false;
 			}
 		});
 	
