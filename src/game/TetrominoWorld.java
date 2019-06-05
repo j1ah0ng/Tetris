@@ -139,7 +139,6 @@ public class TetrominoWorld extends World {
 
     // Public getter and setter functions
     public void setOpponent(TetrominoWorld opponent) { this.opponent = opponent; }
-
     public void setLeft(KeyCode k) { this.left = k; }
     public void setRight(KeyCode k) { this.right = k; }
     public void setDown(KeyCode k) { this.down = k; }
@@ -220,10 +219,10 @@ public class TetrominoWorld extends World {
                 int xZero = 0;
                 int yZero = 0;
                 for (ImageView i : fallingBlocks) {
-                    xZero += GridPane.getColumnIndex(i);
-                    yZero += GridPane.getRowIndex(i);
+                    xZero += 1 + GridPane.getColumnIndex(i);    // add 1 to fix
+                    yZero += 1 + GridPane.getRowIndex(i);       // left shifting
                 }
-                xZero /= 4;
+                xZero /= 4; // where 4 is the number of blocks
                 yZero /= 4;
 
                 // Translate blocks to points about origin
