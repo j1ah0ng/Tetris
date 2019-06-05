@@ -55,6 +55,9 @@ public class Game extends Application {
 	boolean ismultiplayer = false;
 	boolean isblitz = false;
 	
+	Text player1wins;
+	Text player2wins;
+	Text tie;
 	Text scoreText;
 	Score score1;
 	Score score2;
@@ -71,6 +74,9 @@ public class Game extends Application {
 			}
 	    });
 
+		int w = 800;
+		int h = 640;
+		
 	    //default keycodes
 	    KeyCode kdown = KeyCode.S;
 	    KeyCode kright = KeyCode.D;
@@ -88,6 +94,22 @@ public class Game extends Application {
 	    KeyCode kmpfrenzy2 = KeyCode.O;
 	    KeyCode kmpdrop2 = KeyCode.P;
 
+	    player1wins = new Text("PLAYER 1 WINS");
+		player2wins = new Text("PLAYER 2 WINS");
+		tie = new Text ("TIE");
+		
+	    player1wins.setFill(Color.GOLD);
+	    player2wins.setFill(Color.GOLD);
+	    tie.setFill(Color.GOLD);
+
+		player1wins.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+		player2wins.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+		tie.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 40));
+
+		player1wins.setTranslateY(-1*h/10);
+		player2wins.setTranslateY(-1*h/10);
+		tie.setTranslateY(-1*h/10);
+		
 	    scoreText = new Text("SCORE");
 	    score1 = new Score(); //score of player1
 	    score2 = new Score(); //score player2 (if needed)
@@ -101,9 +123,6 @@ public class Game extends Application {
 		
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
-
-		int w = 800;
-		int h = 640;
 
 		Image backLogo = new Image("file:assets/backgrounds/backlogoTransparent.png");
 		ImageView miv2 = new ImageView();
@@ -147,7 +166,7 @@ public class Game extends Application {
 		vbox1.setLayoutY(-h);
 
 		Text bindTitle = new Text("BINDS");
-		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
+		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 75));
 		bindTitle.setFill(Color.GOLD);
 
 		vbox1.getChildren().add(bindTitle);
@@ -1252,12 +1271,16 @@ public class Game extends Application {
     		for (int i=0;i<mPane.getChildren().size();i++) {
     			mPane.getChildren().get(i).setEffect(blur);
     		} 
-    		if (score1.getScore()>=score2.getScore()) {
+    		if (score1.getScore()>score2.getScore()) {
     			scoreTemp.setScore(score1.getScore());
+        		mPane.getChildren().addAll(r, player1wins, ivretry, ivhome, scoreTemp);
+    		} else if (score1.getScore()==score2.getScore()){
+    			scoreTemp.setScore(score1.getScore());
+        		mPane.getChildren().addAll(r, tie, ivretry, ivhome, scoreTemp);
     		} else {
     			scoreTemp.setScore(score2.getScore());
+        		mPane.getChildren().addAll(r, player2wins, ivretry, ivhome, scoreTemp);
     		}
-    		mPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	} else if (isblitz==true) {
     		for (int i=0;i<blitzPane.getChildren().size();i++) {
     			blitzPane.getChildren().get(i).setEffect(blur);
