@@ -1,16 +1,15 @@
 package game;
 
-import engine.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
+import engine.Block;
+import engine.World;
 import javafx.animation.AnimationTimer;
-import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 
 /**
@@ -59,7 +58,7 @@ public class TetrominoWorld extends World {
     /** A static final attribute that represents the grid's width.  */
     public static final int WIDTH = 12;
     /** A static final attribute that represents the grid's height.  */
-    public static final int HEIGHT = 18;
+    public static final int HEIGHT = 20;
 
     /* End static types */
 
@@ -79,7 +78,7 @@ public class TetrominoWorld extends World {
     private final boolean MULTIPLAYER;
     /** A final boolean attribute that represents whether the current mode is blitz. */
     private final boolean BLITZ;
-
+    
     // Data relevant only to blitz mode
     /** A static final long attribute that keeps track of how long blitz mode is.   */
     private static final long BLITZ_LENGTH_NS = (long)120e9;
@@ -111,10 +110,13 @@ public class TetrominoWorld extends World {
     private boolean gameOver;
     /** A Game attribute representing the Game.java class. */
     private Game game;
-    /** Current score, as a type long */
-    private long score;
-    /** Score object to deal with GUI representation of the score */
-    private Score scoreText;
+    
+    Score tetrominoScore = new Score();
+    
+    //    /** Current score, as a type long */
+//    private long score;
+//    /** Score object to deal with GUI representation of the score */
+//    private Score scoreText;
 
     /** An ArrayList of ImageView objects that represent the set of falling blocks. */
     private ArrayList<ImageView> fallingBlocks; 
@@ -123,6 +125,8 @@ public class TetrominoWorld extends World {
     /** An integer attribute representing the ID of the next falling tetromino. */
     private int nextTetromino;             
 
+    
+    boolean lost = false;
     // Constructors
     
     /**
@@ -221,7 +225,7 @@ public class TetrominoWorld extends World {
      * @param score Score object to update
      */
 
-    public void setScoreText(Score scoreText) { this.scoreText = scoreText; }
+//    public void setScoreText(Score scoreText) { this.scoreText = scoreText; }
     /** 
      * <PRE>
      * Sets the opponent TetrominoWorld.
@@ -278,8 +282,9 @@ public class TetrominoWorld extends World {
      * </PRE>
      */
     public void setMPDrop(KeyCode k) { this.mpDrop = k; }
-    /** Gets the score object */
-    public Score getScoreText() { return this.scoreText; }
+//    /** Gets the score object */
+//    public Score getScoreText() { return this.scoreText; }
+        
     /**
      * <PRE>
      * Gets the left keycode.
@@ -355,7 +360,7 @@ public class TetrominoWorld extends World {
 
                 if (fallingBlocks.size() == 0) {        // Deal with first run scenario
                     // Reset score
-                    if (scoreText != null) scoreText.setScore(0);
+                   //////////////////////////////////////////////////////////////////////////////////////////////////// if (scoreText != null) scoreText.setScore(0);
 
                     // Randomise block appearance
                     int blockType = (int) (Math.random() * BLOCKS.length);
@@ -381,7 +386,9 @@ public class TetrominoWorld extends World {
                 }
 
                 else {
-                    addScore(1);
+                    //addScore(1);
+                	tetrominoScore.addScore(1);
+                	game.score1.addScore(1);
                     handleSpawn();
                 }
             }
@@ -497,7 +504,7 @@ public class TetrominoWorld extends World {
                 // Check each row.
                 if (rows[i] >= WIDTH) {
                     ++rowsEliminated;
-                    addScore(10);
+                    /////////////////////////////////////////////////////addScore(10);
                     // Move everything under it down and everything in it away.
                     Iterator<Node> iter = getChildren().iterator();
                     while (iter.hasNext()) {
@@ -506,6 +513,11 @@ public class TetrominoWorld extends World {
                         else {
                             int k = getRowIndex(n);
                             if (k == i) iter.remove();
+                            if (k == i) { 
+                            	game.score1.addScore(10);
+                            	tetrominoScore.addScore(10);
+                            	iter.remove();
+                            }
                             else if (k < i) setRowIndex(n, getRowIndex(n) + 1);
                         }
                     }
@@ -608,7 +620,7 @@ public class TetrominoWorld extends World {
 
         this.fallingBlocks = new ArrayList<ImageView>();
 
-        score = 0;
+        //////////////////////////////////////////////////////////////////score = 0;
     }
 
     /**
@@ -648,7 +660,15 @@ public class TetrominoWorld extends World {
      * Moves the falling tetromino blocks down one block.
      */
     private void moveDown() {
-
+    	if (game.mPane.getChildren().contains(game.r)) {
+    		gameOver=true;
+        	for (int i = fallingBlocks.size()-1;i>=1;i--) {
+        		fallingBlocks.remove(fallingBlocks.get(i));
+        	}
+        	stopGame();
+            spawnNew = false;
+            return;
+        }
         if (!checkCollisions(0, 1)) {
             for (ImageView view : fallingBlocks) {
                 // Move blocks down
@@ -662,6 +682,7 @@ public class TetrominoWorld extends World {
      * Ends the game.
      */
     private void endGame() {
+    	lost=true;
         if (game != null) game.endGame();
         stop();
         spawnNew = false;
@@ -715,11 +736,11 @@ public class TetrominoWorld extends World {
         spawnNew = false;
     }
 
-    /** Updates the stored Score object whenever the score is updated.*/
-    private void addScore(long add) {
-        this.score += add;
-        if (scoreText != null) scoreText.setScore((int) score);
-    }
+//    /** Updates the stored Score object whenever the score is updated.*/
+//    private void addScore(long add) {
+//        this.score += add;
+//        if (scoreText != null) scoreText.setScore((int) score);
+//    }
 
     /**
      * <PRE>

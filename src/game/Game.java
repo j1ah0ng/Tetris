@@ -1,7 +1,8 @@
 package game;
 
+import java.io.File;
+
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,40 +32,102 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ * <PRE>
+ * The Game class sets up the GUI environment for the entire project. It handles everything you see including all the menus, animations,
+ *  backgrounds, icons, buttons and logic in Tetris (except for the playable GridPane). It is also responsible for controlling media and
+ *  creating new Worlds. 
+ * @author Mario
+ *</PRE>
+ */
 public class Game extends Application {
-	
-	Media media = new Media("file:assets/sound/tetris-classic.mp3");
-    // MediaPlayer mp = new MediaPlayer(media);
+    /** music file */
+	File f = new File("tetris-classic.mp3");
+    /** makes a media object out of the music file */
+	Media media = new Media(f.toURI().toString());
+    /** forms a new multimedia player object initialized to media */
+    MediaPlayer mp = new MediaPlayer(media);
+    /** creates a new StackPane for regular mode */
 	StackPane regPane = new StackPane();
+    /** creates a new StackPane for multiplayer mode */
 	StackPane mPane = new StackPane();
+    /** creates a new blitz Pane for regular mode */
 	StackPane blitzPane = new StackPane();
+    /** creates a new blur effect */
 	BoxBlur blur = new BoxBlur();
+    /** creates a new rectangle */
 	Rectangle r = new Rectangle();
+    /** creates a new text object */
 	Text tgameOver = new Text("GAME OVER");
 	
+    /** image for the retry button */
 	Image retry = new Image("file:assets/backgrounds/retryred.png");
+    /** image for the filled retry button */
 	Image retryfilled = new Image("file:assets/backgrounds/retryfilled.png");
 
+    /** image for the home button */
 	Image home = new Image("file:assets/backgrounds/homered.png");
+    /** image for the filled home button */
 	Image homefilled = new Image("file:assets/backgrounds/homefilled.png");
 
+    /** imageview object for the retry button initialized to the retry button */
 	ImageView ivretry = new ImageView(retry);
+    /** imageview object for the home button initialized to the home button*/
 	ImageView ivhome = new ImageView(home);
 	
+    /** boolean attribute that keeps track of whether you're in regular mode or not*/
 	boolean isregular = false;
+    /** boolean attribute that keeps track of whether you're in multiplayer mode or not*/
 	boolean ismultiplayer = false;
+    /** boolean attribute that keeps track of whether you're in blitz mode or not*/
 	boolean isblitz = false;
 	
+    /** text attribute that says "PLAYER 1 WINS" (not initialized yet)*/
 	Text player1wins;
+    /** text attribute that says "PLAYER 2 WINS" (not initialized yet)*/
 	Text player2wins;
+    /** text attribute that says "TIE" (not initialized yet)*/
 	Text tie;
+	
+    /** text attribute that says "SCORE" (not initialized yet)*/
 	Text scoreText;
+    /** text attribute that displays the score (not initialized yet)*/
 	Score score1;
+    /** extra text attribute that displays player 2's score (might not be needed)*/
 	Score score2;
 	
+    /** image for regular mode background*/
+	Image regbg;
+    /** imageview that contains the regular mode background*/
+	ImageView riv;
+	
+    /** image for multiplayer mode background*/
+	Image multbg;
+    /** imageview that contains the multiplayer mode background*/
+	ImageView multiv;
+	
+    /** image for blitz mode background*/
+	Image blitzbg;
+    /** imageview that contains the blitz mode background*/
+	ImageView biv;
+	
+    /** regular mode tetrominoWorld object*/
+	TetrominoWorld regularWorld;
+    /** blitz mode tetrominoWorld object*/
+	TetrominoWorld blitzWorld;
+    /** multiplayer player 1 tetrominoWorld object*/
+	TetrominoWorld mpWorldA;
+    /** multiplayer player 2 tetrominoWorld object*/
+	TetrominoWorld mpWorldB;
+	
+	/**
+	 * <PRE>
+	 * sets up and contains the logic for music and everything visible in Tetris (except gridpane) and launches TetrominoWorld objects. 
+	 * @author Mario
+	 *</PRE>
+	 */
 	@Override
 	public void start(Stage stage) throws Exception {
-		/*
 	    mp.setVolume(0.5);
 	    mp.play();
 	    mp.setOnEndOfMedia(new Runnable() {
@@ -75,26 +138,38 @@ public class Game extends Application {
 			}
 	    });
 
-		 */
-
 		int w = 800;
 		int h = 640;
 		
 	    //default keycodes
+	    /** player 1 default down keycode*/
 	    KeyCode kdown = KeyCode.S;
+	    /** player 1 default right keycode*/
 	    KeyCode kright = KeyCode.D;
+	    /** player 1 default left keycode*/
 	    KeyCode kleft = KeyCode.A;
+	    /** player 1 default rotate keycode*/
 		KeyCode krotate = KeyCode.R;
+	    /** player 1 default drop keycode*/
 	    KeyCode kdrop = KeyCode.SPACE;
+	    /** player 1 default frenzy keycode(only in multiplayer)*/
 	    KeyCode kmpfrenzy = KeyCode.F;
+	    /** player 1 default drop keycode(only in multiplayer)*/
 	    KeyCode kmpdrop = KeyCode.G;
 
+	    /** player 2 default down keycode*/
 	    KeyCode kdown2 = KeyCode.DOWN;
+	    /** player 2 default right keycode*/
 	    KeyCode kright2 = KeyCode.RIGHT;
+	    /** player 2 default left keycode*/
 	    KeyCode kleft2 = KeyCode.LEFT;
+	    /** player 2 default rotate keycode*/
 	    KeyCode krotate2 = KeyCode.COMMA;
+	    /** player 2 default drop keycode*/
 	    KeyCode kdrop2 = KeyCode.PERIOD;
+	    /** player 2 default frenzy keycode(only in multiplayer)*/
 	    KeyCode kmpfrenzy2 = KeyCode.O;
+	    /** player 2 default drop  keycode(only in multiplayer)*/
 	    KeyCode kmpdrop2 = KeyCode.P;
 
 	    player1wins = new Text("PLAYER 1 WINS");
@@ -126,8 +201,10 @@ public class Game extends Application {
 		
 		stage.setTitle("Tetris");
 		stage.setResizable(true);
-
+		
+	    /** backlogo image*/
 		Image backLogo = new Image("file:assets/backgrounds/backlogoTransparent.png");
+	    /** imageview object for backlogo image*/
 		ImageView miv2 = new ImageView();
 		miv2.setImage(backLogo);
 		miv2.setFitHeight(50);
@@ -135,6 +212,7 @@ public class Game extends Application {
 		miv2.setTranslateX(25 + (-1 * w / 2));
 		miv2.setTranslateY(25 + (-1 * h / 2));
 
+	    /** 2nd imageview object for backlogo image*/
 		ImageView miv3 = new ImageView();
 		miv3.setImage(backLogo);
 		miv3.setFitHeight(50);
@@ -142,6 +220,7 @@ public class Game extends Application {
 		miv3.setTranslateX(25 + (-1 * w / 2));
 		miv3.setTranslateY(25 + (-1 * h / 2));
 
+	    /** 3rd imageview object for backlogo image*/
 		ImageView miv4 = new ImageView();
 		miv4.setImage(backLogo);
 		miv4.setFitHeight(50);
@@ -151,8 +230,11 @@ public class Game extends Application {
 
 		// Binds scene
 
+	    /** default pane for binds*/
 		StackPane bindsRoot = new StackPane();
+	    /** represents the scene in binds*/
 		Scene bindScene = new Scene(bindsRoot, w, h, Color.BLACK);
+	    /**represents a textfield object that is needed to implement keycode functionality*/
 		TextField t = new TextField();
 		t.setTranslateY(-h);
 		bindsRoot.getChildren().addAll(t);
@@ -160,14 +242,17 @@ public class Game extends Application {
 		bindsRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
+				/** custom cursor image*/
 				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				bindScene.setCursor(new ImageCursor(im));
 			}
 		});
 
+	    /** vbox that contains the bind title*/
 		VBox vbox1 = new VBox();
 		vbox1.setLayoutY(-h);
-
+		
+	    /** text that says "BINDS". Also, it's the title of the binds scene*/
 		Text bindTitle = new Text("BINDS");
 		bindTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 75));
 		bindTitle.setFill(Color.GOLD);
@@ -178,12 +263,18 @@ public class Game extends Application {
 
 		bindsRoot.getChildren().addAll(vbox1, miv3);
 		
+	    /** number 1 image*/
 		Image n1= new Image("file:assets/backgrounds/1.png");
+	    /** number 1 filled image*/
 		Image n1filled = new Image("file:assets/backgrounds/1filled.png");
+	    /** imageview object for number 1*/
 		ImageView num1 = new ImageView(n1filled);
 		
+	    /** number 2 image*/
 		Image n2 = new Image("file:assets/backgrounds/2.png");
+	    /** number 2 filled image*/
 		Image n2filled = new Image("file:assets/backgrounds/2filled.png");
+	    /** imageview object for number 2*/
 		ImageView num2 = new ImageView(n2);
 		num2.setFitWidth(45);
 
@@ -196,12 +287,19 @@ public class Game extends Application {
 		
 		bindsRoot.getChildren().addAll(num1, num2);
 		
+	    /** text on the left in the bind scene that specifies which button is down*/
 		Text down = new Text("DOWN");
+	    /** text on the left in the bind scene that specifies which button is right*/
 		Text right = new Text("RIGHT");
+	    /** text on the left in the bind scene that specifies which button is left*/
 		Text left = new Text("LEFT");
+	    /** text on the left in the bind scene that specifies which button is rotate*/
 		Text rotate = new Text("ROTATE");
+	    /** text on the left in the bind scene that specifies which button is drop*/
 		Text drop = new Text("DROP");
+	    /** text on the left in the bind scene that specifies which button is mp frenzy*/
 		Text mpfrenzy = new Text("MP FRENZY");
+	    /** text on the left in the bind scene that specifies which button is mp drop*/
 		Text mpdrop = new Text("MP DROP");
 
 		down.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
@@ -238,16 +336,26 @@ public class Game extends Application {
 		
 		bindsRoot.getChildren().addAll(down, right, left, rotate, drop, mpfrenzy, mpdrop);
 
+	    /** image for change button*/
 		Image change = new Image("file:assets/backgrounds/change.png");
+	    /** image for change button filled*/
 		Image changefilled = new Image("file:assets/backgrounds/changefilled.png");
 		
+	    /** change button in binds scene #1*/
 		ImageView ivchange1 = new ImageView(change);
+	    /** change button in binds scene #2*/
 		ImageView ivchange2 = new ImageView(change);
+	    /** change button in binds scene #3*/
 		ImageView ivchange3 = new ImageView(change);
+	    /** change button in binds scene #4*/
 		ImageView ivchange4 = new ImageView(change);
+	    /** change button in binds scene #5*/
 		ImageView ivchange5 = new ImageView(change);
+	    /** change button in binds scene #6*/
 		ImageView ivchange6 = new ImageView(change);
+	    /** change button in binds scene #7*/
 		ImageView ivchange7 = new ImageView(change);
+
 		
 		ivchange1.setPreserveRatio(true);
 		ivchange2.setPreserveRatio(true);
@@ -283,12 +391,19 @@ public class Game extends Application {
 				
 		bindsRoot.getChildren().addAll(ivchange1, ivchange2, ivchange3, ivchange4, ivchange5, ivchange6, ivchange7);
 
+	    /** displays current down key for player 1*/
 		Text tdown = new Text(kdown.getName());
+	    /** displays current right key for player 1*/
 		Text tright = new Text(kright.getName());
+	    /** displays current left key for player 1*/
 		Text tleft = new Text(kleft.getName());
+	    /** displays current rotate key for player 1*/
 		Text trotate = new Text(krotate.getName());
+	    /** displays current drop key for player 1*/
 		Text tdrop = new Text(kdrop.getName());
+	    /** displays current mp frenzy key for player 1(only in multiplayer)*/
 		Text tmpfrenzy = new Text(kmpfrenzy.getName());
+	    /** displays current mp drop key for player 1(only in multiplayer)*/
 		Text tmpdrop = new Text(kmpdrop.getName());
 		
 		tdown.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
@@ -315,12 +430,19 @@ public class Game extends Application {
 		tmpfrenzy.setTranslateY(0.3203125*h);
 		tmpdrop.setTranslateY(0.4375*h);
 		
+	    /** displays current down key for player 2*/
 		Text tdown2 = new Text(kdown2.getName());
+	    /** displays current right key for player 2*/
 		Text tright2 = new Text(kright2.getName());
+	    /** displays current left key for player 2*/
 		Text tleft2 = new Text(kleft2.getName());
+	    /** displays current rotate key for player 2*/
 		Text trotate2 = new Text(krotate2.getName());
+	    /** displays current drop key for player 2*/
 		Text tdrop2 = new Text(kdrop2.getName());
+	    /** displays current mp frenzy key for player 2(only in multiplayer)*/
 		Text tmpfrenzy2 = new Text(kmpfrenzy2.getName());
+	    /** displays current mp drop key for player 2(only in multiplayer)*/
 		Text tmpdrop2 = new Text(kmpdrop2.getName());
 		
 		tdown2.setFont(Font.font("Impact", FontWeight.NORMAL, 30));
@@ -352,9 +474,13 @@ public class Game extends Application {
 		
 		// Music scene
 
+	    /** the type of pane in the music scene*/
 		StackPane musicRoot = new StackPane();
+	    /** scene of the music root*/
 		Scene musicScene = new Scene(musicRoot, w, h, Color.BLACK);
+	    /** background image of music*/
 		Image musicim = new Image("file:assets/backgrounds/musicbackground.jpg");
+	    /** imageview for background image of music*/
 		ImageView ivmusic = new ImageView(musicim);
 		ivmusic.setFitWidth(800);
 		ivmusic.setFitHeight(640);
@@ -362,26 +488,29 @@ public class Game extends Application {
 
 		// hard to see tetromino cursor on slider so keep default cursor
 
+	    /** vbox that contains the music scene title*/
 		VBox vbox2 = new VBox();
 		vbox2.setSpacing(50);
 		vbox2.setLayoutX(w / 2 - 0.125*w);
 		vbox2.setLayoutY(h / 2 - 0.16666667*h);
 
+	    /** music scene title*/
 		Text musicTitle = new Text("MUSIC");
 		musicTitle.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		musicTitle.setFill(Color.WHITE);
 
+	    /** slider to control volume*/
 		Slider slider = new Slider();
 		slider.setMin(0);
 		slider.setMax(1);
 		slider.setShowTickMarks(true);
 		slider.setMajorTickUnit(0.1);
 		slider.setShowTickLabels(true);
-		// slider.setValue(mp.getVolume());
+		slider.setValue(mp.getVolume());
 		slider.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
-				// mp.setVolume(slider.getValue());
+				mp.setVolume(slider.getValue());
 			}
 		});
 		
@@ -392,25 +521,32 @@ public class Game extends Application {
 		musicRoot.getChildren().addAll(vbox2, miv4);
 
 		// Modes menu scene
-
+		
+	    /** type of pane in the menu scene*/
 		StackPane menuRoot = new StackPane();
+	    /** scene for the menu*/
 		Scene menuScene = new Scene(menuRoot, w, h, Color.BLACK);
 		menuRoot.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
-			public void handle(MouseEvent e) {
+			public void handle(MouseEvent e) {   
+				/** custom cursor image*/
 				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				menuScene.setCursor(new ImageCursor(im));
 			}
 		});
 
+	    /** background for the menu scene (where you chose modes)*/
 		Image menubg = new Image("file:assets/backgrounds/menumodebackground.jpg");
+	    /** imageview object for the background menu*/
 		ImageView miv1 = new ImageView();
 
 		miv1.setFitHeight(h);
 		miv1.setFitWidth(w);
 		miv1.setImage(menubg);
 
+	    /** hbox for modes scene title*/
 		HBox modeTitle = new HBox();
+	    /** modes scene title text*/
 		Text title = new Text("MODES");
 		title.setFont(Font.font("Impact", FontWeight.EXTRA_BOLD, 80));
 		title.setFill(Color.WHITE);
@@ -419,8 +555,11 @@ public class Game extends Application {
 
 		modeTitle.getChildren().add(title);
 
+	    /** image of the regular button*/
 		Image regular = new Image("file:assets/backgrounds/regular.png");
+	    /** image of the regular button filled*/
 		Image regularfilled = new Image("file:assets/backgrounds/regularfilled.png");
+	    /** imageview of the regular button filled*/
 		ImageView mreg = new ImageView();
 		mreg.setImage(regular);
 		mreg.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -436,8 +575,11 @@ public class Game extends Application {
 			}
 		});
 
+	    /** image of the blitz button*/
 		Image blitz = new Image("file:assets/backgrounds/blitz.png");
+	    /** image of the blitz button filled*/
 		Image blitzfilled = new Image("file:assets/backgrounds/blitzfilled.png");
+	    /** imageview of the blitz button*/
 		ImageView mblitz = new ImageView();
 		mblitz.setImage(blitz);
 		mblitz.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -453,8 +595,11 @@ public class Game extends Application {
 			}
 		});
 
+	    /** image of the multiplayer button*/
 		Image multiplayer = new Image("file:assets/backgrounds/multiplayer.png");
+	    /** image of the multiplayer button filled*/
 		Image multiplayerfilled = new Image("file:assets/backgrounds/multiplayerfilled.png");
+		/** imageview of the multiplayer button filled*/
 		ImageView mmultiplayer = new ImageView();
 		mmultiplayer.setImage(multiplayer);
 		mmultiplayer.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -478,11 +623,15 @@ public class Game extends Application {
 
 		// Start menu scene
 
+	    /** root pane for the start menu*/
 		StackPane root = new StackPane();
 		
+	    /** stat menu scene*/
 		Scene s = new Scene(root, w, h, Color.BLACK);
 
+	    /** background image of start menu*/
 		Image bg = new Image("file:assets/backgrounds/tetrisstartmenu2.png");
+	    /** imageview object of the background of the start menu*/
 		ImageView iv1 = new ImageView();
 
 		iv1.setFitWidth(w);
@@ -490,33 +639,43 @@ public class Game extends Application {
 		iv1.setImage(bg);
 		root.getChildren().add(iv1);
 
+	    /** imageview object*/
 		ImageView iv2 = new ImageView();
+	    /** background image for the modes button*/
 		Image modes = new Image("file:assets/backgrounds/modes.png");
+	    /** background image for the modes button filled*/
 		Image modesfilled = new Image("file:assets/backgrounds/modesfilled.png");
 		iv2.setImage(modes);
 		iv2.setTranslateY(0);
 
+	    /** imageview object*/
 		ImageView iv3 = new ImageView();
+	    /** background image for the music button*/
 		Image music = new Image("file:assets/backgrounds/music.png");
+	    /** background image for the music button filled*/
 		Image musicfilled = new Image("file:assets/backgrounds/musicfilled.png");
 		iv3.setImage(music);
 		iv3.setTranslateY(0.17578125*h);
 
+	    /** imageview object*/
 		ImageView iv4 = new ImageView();
+	    /** background image for the binds button*/
 		Image binds = new Image("file:assets/backgrounds/binds.png");
+	    /** background image for the binds button filled*/
 		Image bindsfilled = new Image("file:assets/backgrounds/bindsfilled.png");
 		iv4.setImage(binds);
 		iv4.setTranslateY(0.3515625*h);
 
 		// regular mode
+	    /** scene for the regular mode*/
 		Scene regularScene = new Scene(regPane, w, h, Color.BLACK);
 
-		Image regbg = new Image("file:assets/backgrounds/regularmodebackground.jpg");
-		ImageView riv = new ImageView();
+		regbg = new Image("file:assets/backgrounds/regularmodebackground.jpg");
+		riv = new ImageView(regbg);
 		riv.setImage(regbg);
 		riv.setFitHeight(h);
 		riv.setFitWidth(w);
-		regPane.getChildren().addAll(riv);
+		//regPane.getChildren().addAll(riv);
 
 		mreg.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -526,9 +685,14 @@ public class Game extends Application {
 				isregular=true;
 				ismultiplayer=false;
 				isblitz=false;
-				TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+				regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_NORMAL);
-				regPane.getChildren().addAll(regularWorld, scoreText, score1);
+				scoreText.setTranslateX(-270);
+				scoreText.setTranslateY(-210);
+				
+				score1.setTranslateX(-270);
+				score1.setTranslateY(-160);
+				regPane.getChildren().addAll(riv, regularWorld, scoreText, score1);
 				regularWorld.setAlignment(Pos.BASELINE_CENTER);
 				regPane.setAlignment(regularWorld, Pos.CENTER);
 				regPane.addEventHandler(KeyEvent.KEY_RELEASED, e -> regularWorld.addKey(e.getCode()));
@@ -541,21 +705,22 @@ public class Game extends Application {
 				regularWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
 				regularWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
 
-				regularWorld.setScoreText(score1);
+				//regularWorld.setScoreText(score1);
 				regularWorld.start();
 			}
 		});
 
 		// multiplayer mode
+	    /** Scene for the multiplayer pane*/
 		Scene multiplayerScene = new Scene(mPane, w, h, Color.BLACK);
 
-		Image multbg = new Image("file:assets/backgrounds/2playerbackground.png");
-		ImageView multiv = new ImageView();
+		multbg = new Image("file:assets/backgrounds/2playerbackground.png");
+		multiv = new ImageView();
 		multiv.setImage(multbg);
 		multiv.setFitHeight(h);
 		multiv.setFitWidth(w);
 
-		mPane.getChildren().addAll(multiv);
+		//mPane.getChildren().addAll(multiv);
 
 		mmultiplayer.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -565,9 +730,9 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=true;
 				isblitz=false;
-				TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
+				mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
-				TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
+				mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_MULTIPLAYER);
 				mpWorldA.setOpponent(mpWorldB);
 				mpWorldB.setOpponent(mpWorldA);
@@ -575,7 +740,7 @@ public class Game extends Application {
 				// Add them, setting alignment reasonably
 				score1.setTranslateY(-h);	
 				score2.setTranslateY(-h);
-				mPane.getChildren().addAll(mpWorldA, mpWorldB, score1, score2);
+				mPane.getChildren().addAll(multiv, mpWorldA, mpWorldB, score1, score2);
 				mpWorldA.setAlignment(Pos.BASELINE_LEFT);
 				mpWorldB.setAlignment(Pos.BASELINE_RIGHT);
 
@@ -606,8 +771,8 @@ public class Game extends Application {
 				mpWorldB.setMPFrenzy(KeyCode.getKeyCode(tmpfrenzy2.getText()));
 				mpWorldB.setMPDrop(KeyCode.getKeyCode(tmpdrop2.getText()));
 
-				mpWorldA.setScoreText(score1);
-				mpWorldB.setScoreText(score2);
+//				mpWorldA.setScoreText(score1);
+//				mpWorldB.setScoreText(score2);
 
 				mpWorldA.start();
 				mpWorldB.start();
@@ -617,15 +782,16 @@ public class Game extends Application {
 
 		// StackPane regPane = new StackPane();
 
+	    /** Scene for the Blitz Pane*/
 		Scene blitzScene = new Scene(blitzPane, w, h, Color.BLACK);
 
-		Image blitzbg = new Image("file:assets/backgrounds/blitzmodebackground.jpg");
-		ImageView biv = new ImageView();
+		blitzbg = new Image("file:assets/backgrounds/blitzmodebackground.jpg");
+		biv = new ImageView();
 		biv.setImage(blitzbg);
 		biv.setFitHeight(h);
 		biv.setFitWidth(w);
 
-		blitzPane.getChildren().addAll(biv);
+		//blitzPane.getChildren().addAll(biv);
 
 		mblitz.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -635,11 +801,16 @@ public class Game extends Application {
 				isregular=false;
 				ismultiplayer=false;
 				isblitz=true;
-				TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+				blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 						TetrominoWorld.GameMode.GM_BLITZ);
 
 				// Add them and set alignment
-				blitzPane.getChildren().addAll(blitzWorld, scoreText, score1);
+				scoreText.setTranslateX(-270);
+				scoreText.setTranslateY(-210);
+				
+				score1.setTranslateX(-270);
+				score1.setTranslateY(-160);
+				blitzPane.getChildren().addAll(biv, blitzWorld, scoreText, score1);
 				blitzWorld.setAlignment(Pos.BASELINE_CENTER);
 				blitzPane.setAlignment(blitzWorld, Pos.CENTER);
 
@@ -655,7 +826,7 @@ public class Game extends Application {
 				blitzWorld.setRot(KeyCode.getKeyCode(trotate.getText()));
 				blitzWorld.setDone(KeyCode.getKeyCode(tdrop.getText()));
 
-				blitzWorld.setScoreText(score1);
+				//blitzWorld.setScoreText(score1);
 				blitzWorld.start();
 			}
 		});
@@ -752,6 +923,7 @@ public class Game extends Application {
 		root.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
+				/** custom cursor image*/
 				Image im = new Image("file:assets/backgrounds/cursornormal.png");
 				s.setCursor(new ImageCursor(im));
 			}
@@ -903,6 +1075,7 @@ public class Game extends Application {
 			}
 		});
 		
+	    /** pop-up alert for changing binds in the bind scene*/
 		Alert alert = new Alert(AlertType.NONE, "Click OK then enter button on keyboard",
 				ButtonType.OK);
 		alert.setTitle("Button Change");
@@ -1120,6 +1293,7 @@ public class Game extends Application {
 		ivretry.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				mp.play();
 				if (ivretry.getParent().equals(regPane)) {
 					for (int i=regPane.getChildren().size()-1;i>=1;i--) {
 						regPane.getChildren().remove(i);
@@ -1137,7 +1311,7 @@ public class Game extends Application {
 					regPane.getChildren().addAll(score1, scoreText);
 					
 					// Create a world of regular gamemode and add it
-					TetrominoWorld regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+					regularWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_NORMAL);
 					regPane.getChildren().addAll(regularWorld);
 					regularWorld.setAlignment(Pos.BASELINE_CENTER);
@@ -1162,9 +1336,9 @@ public class Game extends Application {
 					score2.setTranslateY(-h);
 										
 					// Create two multiplayer worlds
-					TetrominoWorld mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
+					mpWorldA = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_MULTIPLAYER);
-					TetrominoWorld mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
+					mpWorldB = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_MULTIPLAYER);
 					
 					mpWorldA.setOpponent(mpWorldB);
@@ -1218,7 +1392,7 @@ public class Game extends Application {
 					scoreText.setTranslateY(-0.328125*h);
 					blitzPane.getChildren().addAll(score1, scoreText);
 					// Create a blitz world
-					TetrominoWorld blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
+					blitzWorld = new TetrominoWorld(Game.this, (long) 1e9, 0,
 							TetrominoWorld.GameMode.GM_BLITZ);
 
 					// Add them and set alignment
@@ -1245,55 +1419,112 @@ public class Game extends Application {
 			@Override
 			public void handle(MouseEvent event) {
 				stage.setScene(s);
+				mp.play();
 				if(isregular==true) {
-					regPane.getChildren().get(0).setEffect(null);
+					for (int i=regPane.getChildren().size()-1;i>=0;i--) {
+						regPane.getChildren().remove(i);
+					}
 		    	} else if (ismultiplayer==true) {
-					mPane.getChildren().get(0).setEffect(null);
+		    		for (int i=mPane.getChildren().size()-1;i>=0;i--) {
+						mPane.getChildren().remove(i);
+					}
 		    	} else if (isblitz==true) {
-					blitzPane.getChildren().get(0).setEffect(null);
+		    		for (int i=blitzPane.getChildren().size()-1;i>=0;i--) {
+						blitzPane.getChildren().remove(i);
+					}
 		    	}isregular = false;
 		    	ismultiplayer = false;
 		    	isblitz = false;
-				score1.resetScore();
-				score2.resetScore();
+		    	
+		    	score1 = new Score();
+		    	score2 = new Score();
+		    	
+		    	scoreText = new Text("SCORE");
+		    	scoreText.setFill(Color.GOLD);
+				scoreText.setFont(new Font("Chewy", 25));	
+				
+				riv = new ImageView(regbg);
+				riv.setFitHeight(h);
+				riv.setFitWidth(w);
+				
+				multiv = new ImageView(multbg);
+				multiv.setFitHeight(h);
+				multiv.setFitWidth(w);
+				
+				biv = new ImageView(blitzbg);
+				biv.setFitHeight(h);
+				biv.setFitWidth(w);
+				//score1.resetScore();
+				//score2.resetScore();
 			}
 		});
 		stage.setScene(s);
 		stage.show();
 	}
 
+	/**
+	 * <PRE>
+	 * launches the game. 
+	 * @author Mario
+	 *</PRE>
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
+	/**
+	 * <PRE>
+	 * The endGame() method is responsible for what happens when a player loses(e.g. displaying the correct score, pulling up the 
+	 * game over menu, and the blur effect)  
+	 * @author Mario
+	 *</PRE>
+	 */
 	public void endGame() {
-		// mp.stop();
+		mp.stop();
 		Score scoreTemp = new Score();
+//		if (ismultiplayer==true) {
+//			if (TetrominoWorld.score1.getScore() < opponent.game.score1.getScore()) {
+//				game.score2.setScore(opponent.game.score1.getScore());
+//			}
+//			if (game.score1.getScore() == opponent.game.score1.getScore()) {
+//				game.score2.setScore(opponent.game.score1.getScore());
+//			}
+//		}
     	if(isregular==true) {
     		for (int i=0;i<regPane.getChildren().size();i++) {
     			regPane.getChildren().get(i).setEffect(blur);
     		}
-    		scoreTemp.setScore(score1.getScore());
+    		scoreTemp.setScore(regularWorld.tetrominoScore.getScore());
     		regPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	} else if (ismultiplayer==true) {
     		for (int i=0;i<mPane.getChildren().size();i++) {
     			mPane.getChildren().get(i).setEffect(blur);
     		} 
-    		if (score1.getScore()>score2.getScore()) {
-    			scoreTemp.setScore(score1.getScore());
-        		mPane.getChildren().addAll(r, player1wins, ivretry, ivhome, scoreTemp);
-    		} else if (score1.getScore()==score2.getScore()){
-    			scoreTemp.setScore(score1.getScore());
-        		mPane.getChildren().addAll(r, tie, ivretry, ivhome, scoreTemp);
+//    		if (score1.getScore()>score2.getScore()) {
+//    			scoreTemp.setScore(score1.getScore());
+//        		mPane.getChildren().addAll(r, player1wins, ivretry, ivhome, scoreTemp);
+//    		} else if (score1.getScore()==score2.getScore()){
+//    			scoreTemp.setScore(score1.getScore());
+//        		mPane.getChildren().addAll(r, tie, ivretry, ivhome, scoreTemp);
+//    		} else {
+//    			scoreTemp.setScore(score2.getScore());
+//        		mPane.getChildren().addAll(r, player2wins, ivretry, ivhome, scoreTemp);
+//    		}
+    		if (mpWorldA.lost==true && mpWorldB.lost==false) {
+    			//scoreTemp.setScore(mpWorldB.tetrominoScore.getScore());
+        		mPane.getChildren().addAll(r, player2wins, ivretry, ivhome);
+    		} else if (mpWorldA.lost==false && mpWorldB.lost==true){
+    			//scoreTemp.setScore(mpWorldA.tetrominoScore.getScore());
+        		mPane.getChildren().addAll(r, player1wins, ivretry, ivhome);
     		} else {
-    			scoreTemp.setScore(score2.getScore());
-        		mPane.getChildren().addAll(r, player2wins, ivretry, ivhome, scoreTemp);
+    			//scoreTemp.setScore(score2.getScore());
+        		mPane.getChildren().addAll(r, tie, ivretry, ivhome);
     		}
     	} else if (isblitz==true) {
     		for (int i=0;i<blitzPane.getChildren().size();i++) {
     			blitzPane.getChildren().get(i).setEffect(blur);
     		} 
-    		scoreTemp.setScore(score1.getScore());
+    		scoreTemp.setScore(blitzWorld.tetrominoScore.getScore());
     		blitzPane.getChildren().addAll(r, tgameOver, ivretry, ivhome, scoreTemp);
     	}
 	}
